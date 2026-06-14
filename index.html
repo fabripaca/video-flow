@@ -115,11 +115,13 @@
   .layer .lv{font-size:13.5px;color:var(--ink);line-height:1.55}
   .layer .lv .small{color:var(--muted);font-size:12.5px}
   /* capas en 2 columnas con calificación */
-  .layer2{display:grid;grid-template-columns:1fr 92px;gap:14px;align-items:start;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);margin-bottom:10px}
+  .layers2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:760px){.layers2col{grid-template-columns:1fr}}
+  .layer2{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:start;padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--surface2)}
   .l2-name{font-family:'JetBrains Mono';font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
-  .l2-text{font-size:13.5px;color:var(--ink);line-height:1.55}
-  .l2-text .small{color:var(--muted);font-size:12.5px}
-  .l2-rate{text-align:center;padding-top:18px}
+  .l2-text{font-size:13px;color:var(--ink);line-height:1.5}
+  .l2-text .small{color:var(--muted);font-size:12px}
+  .l2-rate{text-align:center}
   .ratebadge{display:inline-block;font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.04em;padding:5px 0;width:100%;border-radius:8px;text-transform:uppercase}
   .ratebadge.alto{color:var(--green);background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.3)}
   .ratebadge.medio{color:var(--yellow);background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.3)}
@@ -192,6 +194,7 @@
   .vbadge.lose{color:var(--red);background:rgba(251,113,133,.12)}
   .vbadge.na{color:var(--faint);background:var(--surface2)}
   .vbadge.up{color:var(--gold);background:rgba(245,177,61,.12)}
+  .vbadge.test{color:var(--yellow);background:rgba(245,197,66,.12)}
   .vidcard{border:1px solid var(--border);border-radius:14px;background:var(--surface);margin-bottom:14px;overflow:hidden}
   .vidcard-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--surface2);flex-wrap:wrap}
   .vidcard-head .vn{font-family:'Saira';font-weight:600;font-size:15px;flex:1;min-width:150px}
@@ -392,15 +395,23 @@ function renderLib(){
 }
 
 // ----- folder actions -----
+function folderOptionsHtml(sel){
+  return `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}" ${sel===f.id?'selected':''}>${escHtml(f.name)}</option>`).join("");
+}
+function refreshFolderSelects(){
+  ["ingFolder","winFolder","nv_folder","ev_folder","mine_folder"].forEach(id=>{
+    const el=document.getElementById(id); if(el){ const v=el.value; el.innerHTML=folderOptionsHtml(v); el.value=v; }
+  });
+}
 function newFolder(){
   const name=prompt("Nombre del producto (ej: Lámpara, Tazas, Luces):");
   if(!name||!name.trim()) return;
   folders.unshift({id:"f"+Date.now(), name:name.trim(), drive:""});
-  saveLib(); renderLib();
+  saveLib(); renderLib(); refreshFolderSelects();
 }
 function renameFolder(id){
   const f=folders.find(x=>x.id===id); if(!f) return;
-  const n=prompt("Nuevo nombre:", f.name); if(n&&n.trim()){ f.name=n.trim(); saveLib(); renderLib(); }
+  const n=prompt("Nuevo nombre:", f.name); if(n&&n.trim()){ f.name=n.trim(); saveLib(); renderLib(); refreshFolderSelects(); }
 }
 function setFolderDrive(id){
   const f=folders.find(x=>x.id===id); if(!f) return;
@@ -412,7 +423,7 @@ function deleteFolder(id){
   if(!confirm(`¿Eliminar la carpeta "${f.name}"? Los winners que tenga pasarán a "Sin carpeta".`)) return;
   folders=folders.filter(x=>x.id!==id);
   lib.forEach(w=>{ if(w._folder===id) w._folder=null; });
-  saveLib(); renderLib();
+  saveLib(); renderLib(); refreshFolderSelects();
 }
 function moveWinner(winId, folderId){
   const w=lib.find(x=>x._id===winId); if(!w) return;
@@ -469,7 +480,7 @@ function showIngesta(){
         <option value="">Sin carpeta</option>
         ${folders.map(f=>`<option value="${escAttr(f.id)}">${escHtml(f.name)}</option>`).join("")}
       </select>
-      <button class="btn" id="analyzeBtn" disabled>Analizar y despiezar →</button>
+      <button class="btn" id="analyzeBtn" disabled>Analizar video completo →</button>
       <div id="status"></div>
     </div>`;
   const drop=$("#drop"), vi=$("#videoInput");
@@ -602,10 +613,12 @@ function renderWinner(){
       <div class="why"><strong>Por qué gana (como pieza):</strong> ${escHtml(a.porQueGana||"")}${a.driver?`<br><span class="mono" style="color:var(--gold);font-size:11px">DRIVER: ${escHtml(a.driver)}</span>`:""}</div>
       ${diagHtml}
       <div class="label" style="margin-top:6px">Las 5 capas</div>
-      <div class="layer2"><div class="l2-info"><div class="l2-name">Hook</div><div class="l2-text">${escHtml(c.hook?.locucion||c.hook?.textoEnPantalla||"—")}<br><span class="small">${escHtml(c.hook?.visual||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.hook?.nivel)}</div></div>
-      <div class="layer2"><div class="l2-info"><div class="l2-name">Cuerpo</div><div class="l2-text">${escHtml(c.cuerpo?.resumen||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.cuerpo?.nivel)}</div></div>
-      <div class="layer2"><div class="l2-info"><div class="l2-name">Oferta / CTA</div><div class="l2-text">${escHtml(c.oferta?.oferta||"—")} <span class="small">· ${escHtml(c.oferta?.cta||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.oferta?.nivel)}</div></div>
-      <div class="layer2"><div class="l2-info"><div class="l2-name">Formato</div><div class="l2-text">${escHtml(c.formato?.formatoOriginal||c.formatoOriginal||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.formato?.nivel)}</div></div>
+      <div class="layers2col">
+        <div class="layer2"><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.hook?.nivel)}</div><div class="l2-info"><div class="l2-name">Hook</div><div class="l2-text">${escHtml(c.hook?.locucion||c.hook?.textoEnPantalla||"—")}<br><span class="small">${escHtml(c.hook?.visual||"")}</span></div></div></div>
+        <div class="layer2"><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.cuerpo?.nivel)}</div><div class="l2-info"><div class="l2-name">Cuerpo</div><div class="l2-text">${escHtml(c.cuerpo?.resumen||"—")}</div></div></div>
+        <div class="layer2"><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.oferta?.nivel)}</div><div class="l2-info"><div class="l2-name">Oferta / CTA</div><div class="l2-text">${escHtml(c.oferta?.oferta||"—")} <span class="small">· ${escHtml(c.oferta?.cta||"")}</span></div></div></div>
+        <div class="layer2"><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.formato?.nivel)}</div><div class="l2-info"><div class="l2-name">Formato</div><div class="l2-text">${escHtml(c.formato?.formatoOriginal||c.formatoOriginal||"—")}</div></div></div>
+      </div>
       ${concHtml}
       <div class="label" style="margin-top:16px">Guion (audio + visual)</div>
       ${guion||'<div class="sub">No se extrajo guion.</div>'}
@@ -838,13 +851,14 @@ const DAY_FIELDS = [
   {k:"date", label:"Día / fecha", type:"date"},
   {k:"platform", label:"Plataforma", type:"select", opts:["Meta","TikTok","Ambas"]},
   {k:"spend", label:"Gasto (S/)", type:"number"},
-  {k:"conv", label:"Conversiones", type:"number"},
-  {k:"cpa", label:"CPA (S/)", type:"number"},
+  {k:"pi", label:"Pagos iniciados", type:"number"},
+  {k:"conv", label:"Conversiones (ventas)", type:"number"},
   {k:"cpm", label:"CPM (S/)", type:"number"},
   {k:"cpc", label:"CPC (S/)", type:"number"},
   {k:"ctr", label:"CTR (%)", type:"number"},
   {k:"hook", label:"Hook 3s (%)", type:"number"},
 ];
+const WINNER_DAY = 4; // recién al día 4 se sabe si es winner
 
 function switchView(v){
   const studio = v==="studio";
@@ -857,36 +871,55 @@ function switchView(v){
 $("#tabStudio").addEventListener("click", ()=>switchView("studio"));
 $("#tabTracker").addEventListener("click", ()=>switchView("tracker"));
 
-function dayVerdict(d){ const p=evalPerf(d); if(!p.anyData) return {cls:"na",txt:"—"}; return p.isWinner?{cls:"win",txt:"Winner"}:{cls:"lose",txt:"No"}; }
-function videoBest(v){
-  const withCpa=(v.days||[]).filter(d=>d.cpa&&!isNaN(parseFloat(d.cpa)));
-  if(!withCpa.length) return null;
-  return withCpa.reduce((a,b)=>parseFloat(b.cpa)<parseFloat(a.cpa)?b:a);
+function num(x){ const v=parseFloat(String(x==null?"":x).replace(",",".")); return isNaN(v)?null:v; }
+function fmtS(n){ return n==null?"—":"S/"+(Math.round(n*100)/100); }
+function cpaOf(d){ const s=num(d.spend), c=num(d.conv); return (s!=null&&c)?s/c:null; }   // CPA = gasto / ventas
+function cp1Of(d){ const s=num(d.spend), p=num(d.pi); return (s!=null&&p)?s/p:null; }     // costo x pago iniciado = gasto / PI
+function dayTraffic(d){ return evalPerf({cpm:d.cpm,cpc:d.cpc,ctr:d.ctr,hook:d.hook}); }    // salud del tráfico (sin CPA)
+// Veredicto por día: BUEN DÍA / MAL DÍA según la salud del tráfico (al día 1-3 no se sabe si es winner)
+function dayVerdict(d){
+  const t=dayTraffic(d);
+  if(!t.anyData) return {cls:"na",txt:"—"};
+  return t.isWinner ? {cls:"win",txt:"Buen día"} : {cls:"lose",txt:"Mal día"};
 }
-function videoIsWinner(v){ return (v.days||[]).some(d=>{const p=evalPerf(d);return p.anyData&&p.isWinner;}); }
+function videoBest(v){
+  const arr=(v.days||[]).map(d=>({d,cpa:cpaOf(d)})).filter(x=>x.cpa!=null);
+  if(!arr.length) return null;
+  return arr.reduce((a,b)=>b.cpa<a.cpa?b:a);
+}
+// Winner sólo a partir del día 4, con tráfico sano y CPA rentable
+function videoIsWinner(v){
+  const days=v.days||[];
+  if(days.length<WINNER_DAY) return false;
+  return days.some(d=>{ const cpa=cpaOf(d); return cpa!=null && cpa<=15 && dayTraffic(d).isWinner; });
+}
 function videoStatus(v){
-  if(!(v.days&&v.days.length)) return {cls:"up",txt:"📤 Subido"};
+  const days=v.days||[];
+  if(!days.length) return {cls:"up",txt:"📤 Subido"};
   if(videoIsWinner(v)) return {cls:"win",txt:"Winner"};
+  if(days.length<WINNER_DAY) return {cls:"test",txt:"En testeo · día "+days.length};
   return {cls:"lose",txt:"No winner"};
 }
 function fldName(id){ const f=folders.find(x=>x.id===id); return f?f.name:""; }
 
 function renderTracker(){
+  const now=new Date();
   const total = tracker.length;
-  const subidos = tracker.filter(v=>!(v.days&&v.days.length)).length;
+  const thisMonth = tracker.filter(v=>{ const ts=parseInt(String(v.id).replace(/\D/g,"")); if(!ts) return false; const dt=new Date(ts); return dt.getMonth()===now.getMonth()&&dt.getFullYear()===now.getFullYear(); }).length;
+  const enTesteo = tracker.filter(v=>{ const d=v.days||[]; return d.length>0 && !videoIsWinner(v) && d.length<WINNER_DAY; }).length;
   const winners = tracker.filter(videoIsWinner);
-  const folderOpts = `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}">${escHtml(f.name)}</option>`).join("");
+  const mios = tracker.filter(v=>v.origen==="propio").length;
 
-  // DASHBOARD — mejores videos winners del editor, por mejor CPA
-  const ranked = winners.map(v=>({v, best:videoBest(v)})).filter(x=>x.best)
-    .sort((a,b)=>parseFloat(a.best.cpa)-parseFloat(b.best.cpa));
+  // DASHBOARD — mejores videos winners del EDITOR, por mejor CPA
+  const ranked = winners.filter(v=>v.origen!=="propio").map(v=>({v, best:videoBest(v)})).filter(x=>x.best)
+    .sort((a,b)=>a.best.cpa-b.best.cpa);
   const dash = ranked.length ? ranked.slice(0,5).map((x,i)=>`
     <div class="dash-row">
       <div class="dash-rank">${i+1}</div>
       <div class="dash-name">${escHtml(x.v.video)}${x.v.folder?`<span style="color:var(--faint);font-weight:400;font-size:11px"> · ${escHtml(fldName(x.v.folder))}</span>`:""}</div>
-      <div class="dash-cpa">mejor CPA S/${escHtml(x.best.cpa)}</div>
+      <div class="dash-cpa">mejor CPA ${fmtS(x.best.cpa)}</div>
     </div>`).join("")
-    : `<div class="libempty" style="padding:18px">Aún no hay videos winners. Aparecerán acá cuando un día cumpla todos los umbrales.</div>`;
+    : `<div class="libempty" style="padding:18px">Aún no hay videos winners del editor. Un video se vuelve winner recién al día ${WINNER_DAY}, con tráfico sano y CPA ≤ S/15.</div>`;
 
   // AGRUPAR por carpeta de producto (colapsable), ordenado por fecha (reciente primero)
   const byDate = arr => arr.slice().sort((a,b)=> a.id<b.id?1:(a.id>b.id?-1:0));
@@ -906,40 +939,43 @@ function renderTracker(){
   folders.forEach(f=>{ const vids=tracker.filter(v=>v.folder===f.id); if(vids.length) groups+=group(f.name, vids, f.id); });
   const loose=tracker.filter(v=>!v.folder || !folders.find(f=>f.id===v.folder));
   if(loose.length) groups+=group("Sin carpeta", loose, "__none");
-  if(!tracker.length) groups=`<div class="libempty" style="padding:24px">Aún no hay videos. Regístralos desde el Estudio (botón "Mandar al Tracker") o agrégalos aquí abajo.</div>`;
+  if(!tracker.length) groups=`<div class="libempty" style="padding:24px">Aún no hay videos. Llegan solos desde el Estudio (botón "Mandar al Tracker"), o sube uno tuyo abajo.</div>`;
 
   $("#viewTracker").innerHTML = `
-    <div class="label">Dashboard · mejores videos del editor</div>
+    <div class="label">Dashboard del mes</div>
     <div class="trkhead">
       <div class="trkstats">
-        <div class="tstat"><div class="n">${total}</div><div class="l">Videos</div></div>
-        <div class="tstat"><div class="n" style="color:var(--gold)">${subidos}</div><div class="l">Subidos</div></div>
+        <div class="tstat"><div class="n">${thisMonth}</div><div class="l">Este mes</div></div>
+        <div class="tstat"><div class="n">${total}</div><div class="l">Videos total</div></div>
+        <div class="tstat"><div class="n" style="color:var(--yellow)">${enTesteo}</div><div class="l">En testeo</div></div>
         <div class="tstat"><div class="n" style="color:var(--green)">${winners.length}</div><div class="l">Winners</div></div>
+        <div class="tstat"><div class="n" style="color:var(--muted)">${mios}</div><div class="l">Míos</div></div>
       </div>
     </div>
     <div class="trkpanel" style="padding:6px 0">${dash}</div>
 
     <div class="trkpanel">
-      <div class="label">Registrar un video nuevo</div>
+      <div class="label">Subir un video mío (no del editor)</div>
+      <div class="sub">Para videos que hiciste tú o copiaste de TikTok. Se trackean igual, pero no cuentan en el ranking del editor.</div>
       <div class="trkgrid">
-        <div class="full"><div class="small-label">Nombre (como lo subió el editor al Drive)</div>
-          <input class="freein" id="nv_name" placeholder="PRODUCTO 13/07 - VID 1" /></div>
-        <div class="full"><div class="small-label">Link del video en Drive (opcional)</div>
-          <input class="freein" id="nv_drive" placeholder="https://drive.google.com/…" /></div>
+        <div class="full"><div class="small-label">Nombre del video</div>
+          <input class="freein" id="mine_name" placeholder="MÍO 13/07 - VID 1" /></div>
+        <div class="full"><div class="small-label">Link en Drive (opcional)</div>
+          <input class="freein" id="mine_drive" placeholder="https://drive.google.com/…" /></div>
         <div class="full"><div class="small-label">Carpeta / producto</div>
-          <select class="freein" id="nv_folder">${folderOpts}</select></div>
+          <select class="freein" id="mine_folder">${folderOptionsHtml("")}</select></div>
       </div>
-      <button class="btn" id="nvSave" style="margin-top:14px">+ Agregar video</button>
+      <button class="btn" id="mineSave" style="margin-top:14px">+ Agregar video mío</button>
     </div>
 
     <div class="label">Videos por producto</div>
     ${groups}`;
 
-  // bind add-video
-  $("#nvSave").addEventListener("click", ()=>{
-    const name=$("#nv_name").value.trim(); if(!name){ alert("Ponle el nombre del video."); return; }
-    const fid=$("#nv_folder").value;
-    tracker.unshift({ id:"t"+Date.now(), video:name, drive:$("#nv_drive").value.trim(), folder:fid, days:[] });
+  // subir video propio
+  $("#mineSave").addEventListener("click", ()=>{
+    const name=$("#mine_name").value.trim(); if(!name){ alert("Ponle el nombre del video."); return; }
+    const fid=$("#mine_folder").value;
+    tracker.unshift({ id:"t"+Date.now(), video:name, drive:$("#mine_drive").value.trim(), folder:fid, origen:"propio", days:[] });
     if(fid) openTrkFolders[fid]=true;
     saveLib(); renderTracker();
   });
@@ -947,12 +983,12 @@ function renderTracker(){
   $("#viewTracker").querySelectorAll("[data-trkfold]").forEach(h=>h.addEventListener("click",()=>{
     const id=h.dataset.trkfold; openTrkFolders[id]=openTrkFolders[id]===false?true:false; renderTracker();
   }));
-  // Pre-subir (editar datos) / TESTEAR (panel de días)
-  $("#viewTracker").querySelectorAll("[data-presub]").forEach(b=>b.addEventListener("click",()=>{
-    editingVid = editingVid===b.dataset.presub?null:b.dataset.presub; testingVid=null; renderTracker();
-  }));
+  // TESTEAR (panel de días) / editar datos (✎)
   $("#viewTracker").querySelectorAll("[data-testear]").forEach(b=>b.addEventListener("click",()=>{
     testingVid = testingVid===b.dataset.testear?null:b.dataset.testear; editingVid=null; addingDayTo=null; editingDay=null; renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-editvid]").forEach(b=>b.addEventListener("click",()=>{
+    editingVid = editingVid===b.dataset.editvid?null:b.dataset.editvid; renderTracker();
   }));
   $("#viewTracker").querySelectorAll("[data-savevid]").forEach(b=>b.addEventListener("click",()=>{
     const v=tracker.find(x=>x.id===b.dataset.savevid); if(!v) return;
@@ -978,16 +1014,16 @@ function videoCardHtml(v){
   const st=videoStatus(v);
   const testing = testingVid===v.id;
   const editing = editingVid===v.id;
-  const folderOpts = `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}" ${v.folder===f.id?'selected':''}>${escHtml(f.name)}</option>`).join("");
+  const mine = v.origen==="propio";
 
-  // panel pre-subir (datos básicos)
+  // panel editar datos (✎)
   const editPanel = editing ? `<div class="dayform">
       <div class="small-label">Nombre del video</div>
       <input class="freein" id="ev_name" value="${escAttr(v.video)}" />
       <div class="small-label" style="margin-top:8px">Link de la carpeta en Drive</div>
       <input class="freein" id="ev_drive" value="${escAttr(v.drive||'')}" placeholder="https://drive.google.com/…" />
       <div class="small-label" style="margin-top:8px">Carpeta / producto</div>
-      <select class="freein" id="ev_folder">${folderOpts}</select>
+      <select class="freein" id="ev_folder">${folderOptionsHtml(v.folder)}</select>
       <div style="display:flex;gap:10px;margin-top:12px">
         <button class="btn" data-savevid="${v.id}" style="margin-top:0">Guardar datos</button>
         <button class="clear" data-cancelvid="1" style="padding:0 16px">Cancelar</button>
@@ -997,19 +1033,19 @@ function videoCardHtml(v){
   let testPanel='';
   if(testing){
     const dayRows = (v.days&&v.days.length) ? v.days.map(d=>{
-      const dv=dayVerdict(d);
+      const dv=dayVerdict(d); const cpa=cpaOf(d), cp1=cp1Of(d);
       return `<tr>
         <td>${escHtml(d.date||"—")}</td><td>${escHtml(d.platform||"—")}</td>
-        <td>${d.spend?("S/"+escHtml(d.spend)):"—"}</td><td>${escHtml(d.conv||"—")}</td>
-        <td>${d.cpa?("S/"+escHtml(d.cpa)):"—"}</td><td>${d.cpm?("S/"+escHtml(d.cpm)):"—"}</td>
-        <td>${d.cpc?("S/"+escHtml(d.cpc)):"—"}</td><td>${d.ctr?(escHtml(d.ctr)+"%"):"—"}</td>
-        <td>${d.hook?(escHtml(d.hook)+"%"):"—"}</td>
+        <td>${d.spend?("S/"+escHtml(d.spend)):"—"}</td><td>${escHtml(d.pi||"—")}</td>
+        <td>${fmtS(cp1)}</td><td>${escHtml(d.conv||"—")}</td><td>${fmtS(cpa)}</td>
+        <td>${d.cpm?("S/"+escHtml(d.cpm)):"—"}</td><td>${d.cpc?("S/"+escHtml(d.cpc)):"—"}</td>
+        <td>${d.ctr?(escHtml(d.ctr)+"%"):"—"}</td><td>${d.hook?(escHtml(d.hook)+"%"):"—"}</td>
         <td><span class="vbadge ${dv.cls}">${dv.txt}</span></td>
         <td style="text-align:right;white-space:nowrap">
           <button class="trkact" data-editday="${d.id}" data-vid="${v.id}">✎</button>
           <button class="trkact d" data-delday="${d.id}" data-vid="${v.id}">×</button></td>
       </tr>`;
-    }).join("") : `<tr><td colspan="11" style="text-align:center;color:var(--faint);padding:14px">Sin días aún. Agrega el primer día de testeo abajo.</td></tr>`;
+    }).join("") : `<tr><td colspan="13" style="text-align:center;color:var(--faint);padding:14px">Sin días aún. Agrega el primer día de testeo abajo.</td></tr>`;
 
     const showForm = (addingDayTo===v.id) || (editingDay&&editingDay.vid===v.id);
     const ed = editingDay&&editingDay.vid===v.id ? (v.days.find(d=>d.id===editingDay.dayId)||{}) : {};
@@ -1021,13 +1057,14 @@ function videoCardHtml(v){
           : `<input class="freein" id="day_${f.k}" type="${f.type}" value="${escAttr(val)}" ${f.type==='number'?'inputmode="decimal"':''} />`;
         return `<div><div class="small-label">${escHtml(f.label)}</div>${inp}</div>`;
       }).join("")}</div>
+      <div class="sub" style="margin-top:8px">CPA y costo por pago iniciado se calculan solos (gasto ÷ ventas y gasto ÷ pagos iniciados).</div>
       <div style="display:flex;gap:10px;margin-top:12px">
         <button class="btn" id="daySave" data-vid="${v.id}" style="margin-top:0">${editingDay&&editingDay.vid===v.id?'Guardar día':'+ Guardar día'}</button>
         <button class="clear" id="dayCancel" style="padding:0 16px">Cancelar</button>
       </div></div>` : `<button class="miniaddbtn" data-addday="${v.id}">+ Agregar día de testeo</button>`;
 
     testPanel = `<div class="trkwrap"><table class="trk">
-        <thead><tr><th>Día</th><th>Plat.</th><th>Gasto</th><th>Conv.</th><th>CPA</th><th>CPM</th><th>CPC</th><th>CTR</th><th>Hook</th><th>Veredicto</th><th></th></tr></thead>
+        <thead><tr><th>Día</th><th>Plat.</th><th>Gasto</th><th>PI</th><th>CP1</th><th>Ventas</th><th>CPA</th><th>CPM</th><th>CPC</th><th>CTR</th><th>Hook</th><th>Veredicto</th><th></th></tr></thead>
         <tbody>${dayRows}</tbody>
       </table></div>${dayForm}`;
   }
@@ -1035,15 +1072,14 @@ function videoCardHtml(v){
   return `<div class="vidcard">
     <div class="vidcard-head">
       <div class="vn">${v.drive?`<a href="${escAttr(v.drive)}" target="_blank" rel="noopener" title="Abrir en Drive">${escHtml(v.video)} ↗</a>`:escHtml(v.video)}</div>
+      ${mine?`<span class="fcount" style="color:var(--muted)">mío</span>`:""}
       <span class="vbadge ${st.cls}">${st.txt}</span>
+      <button class="trkact" data-editvid="${v.id}" title="Editar datos">✎</button>
       <button class="trkact d" data-delvid="${v.id}" title="Eliminar video">×</button>
     </div>
     <div class="vidcard-body">
-      <div class="vidbtns">
-        <button class="vbtn ${editing?'on':''}" data-presub="${v.id}">Pre-subir</button>
-        <button class="vbtn test ${testing?'on':''}" data-testear="${v.id}">TESTEAR</button>
-      </div>
       ${editPanel}
+      <button class="vbtn test ${testing?'on':''}" style="width:100%" data-testear="${v.id}">${testing?'CERRAR TESTEO':'TESTEAR'}</button>
       ${testPanel}
     </div>
   </div>`;
