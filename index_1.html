@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video·Flow · by @fabripaca</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700&family=Saira+Condensed:ital,wght@1,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --bg:#0a0a0b; --surface:#141416; --surface2:#1d1d20; --border:#2f2f34;
+    --ink:#f3f4f6; --muted:#9b9ba3; --faint:#6d6d75;
+    --gold:#e6202e; --gold-soft:rgba(230,32,46,.13);
+    --green:#3ddc84; --yellow:#f5c542; --red:#ff5c6a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;position:relative}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 500px at 88% -8%, rgba(230,32,46,.16), transparent 60%),
+      radial-gradient(800px 520px at -8% 12%, rgba(230,32,46,.10), transparent 55%),
+      radial-gradient(700px 600px at 50% 115%, rgba(230,32,46,.08), transparent 60%),
+      var(--bg);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:repeating-linear-gradient(120deg, transparent 0, transparent 58px, rgba(230,32,46,.06) 58px, rgba(230,32,46,.06) 60px, transparent 60px, transparent 118px, rgba(255,90,100,.05) 118px, rgba(255,90,100,.05) 119px);}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 70px}
+  a{color:var(--gold);text-decoration:none} a:hover{text-decoration:underline}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo .dot{width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+  h1{font-family:'Saira Condensed','Saira',sans-serif;font-style:italic;font-size:27px;font-weight:700;letter-spacing:.5px;background:linear-gradient(180deg,#ffffff 0%,#cdd0d6 52%,#ffffff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h1 b{-webkit-text-fill-color:var(--gold);color:var(--gold)}
+  .tag{font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-top:4px;letter-spacing:.04em}
+  .cfgbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:9px;padding:7px 12px;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+  .cfgbtn:hover{border-color:var(--gold);color:var(--gold)}
+
+  #cfg{display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:18px}
+  #cfg.open{display:block}
+  #cfg label{font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);display:block;margin-bottom:6px}
+  #cfg input,#cfg select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:'JetBrains Mono';font-size:13px;outline:none}
+  #cfg input:focus,#cfg select:focus{border-color:rgba(245,177,61,.6)}
+  #cfg .note{font-size:12px;color:var(--muted);margin-top:8px}
+
+  .grid{display:grid;grid-template-columns:248px 1fr;gap:20px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+
+  /* sidebar */
+  .side{border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:14px;height:fit-content}
+  .side h2{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+  .newbtn{width:100%;background:var(--gold);color:#ffffff;border:none;border-radius:10px;padding:10px;font-family:'Saira';font-weight:600;font-size:13px;cursor:pointer;margin-bottom:12px}
+  .newbtn:hover{background:#ff3b46}
+  .libitem{border:1px solid var(--border);border-radius:10px;padding:9px 10px;margin-bottom:7px;cursor:pointer;transition:.13s;position:relative}
+  .libitem:hover{border-color:rgba(245,177,61,.5)}
+  .libitem.active{border-color:var(--gold);background:var(--gold-soft)}
+  .libitem .nm{font-size:12.5px;font-weight:600;color:var(--ink);padding-right:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .libitem .sc{font-family:'JetBrains Mono';font-size:10px;color:var(--muted);margin-top:2px}
+  .libitem .del{position:absolute;top:7px;right:7px;color:var(--faint);font-size:13px;line-height:1;background:none;border:none;cursor:pointer}
+  .libitem .del:hover{color:var(--red)}
+  .libempty{font-size:12px;color:var(--faint);text-align:center;padding:14px 4px;line-height:1.6}
+  .sidebtns{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+  .sidebtns .newbtn{margin-bottom:0}
+  .foldbtn{flex-shrink:0;background:var(--surface2);color:var(--gold);border:1px solid var(--border);border-radius:10px;font-size:12px;font-family:'Saira';font-weight:600;padding:0 14px;cursor:pointer;white-space:nowrap}
+  .foldbtn:hover{border-color:var(--gold)}
+  .folder{margin-bottom:6px}
+  .fhead{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:9px;cursor:pointer;transition:.12s}
+  .fhead:hover{background:var(--surface2)}
+  .fcaret{font-size:10px;color:var(--faint);width:10px}
+  .fname{font-size:12px;font-weight:600;color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fcount{font-family:'JetBrains Mono';font-size:10px;color:var(--faint);background:var(--bg);border-radius:6px;padding:1px 6px}
+  .ficon{background:none;border:none;color:var(--faint);font-size:12px;cursor:pointer;padding:2px;text-decoration:none;line-height:1}
+  .ficon:hover{color:var(--gold)}
+  .ficon.dim{opacity:.4}
+  .ficon.delf:hover{color:var(--red)}
+  .fitems{padding-left:8px;margin-top:4px}
+
+  /* main */
+  .main{min-width:0}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:18px}
+  .label{font-family:'JetBrains Mono';font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+
+  .drop{border:2px dashed var(--border);border-radius:14px;padding:34px 18px;text-align:center;cursor:pointer;transition:.18s}
+  .drop:hover,.drop.over{border-color:var(--gold);background:var(--gold-soft)}
+  .drop .icon{font-size:28px;opacity:.85}
+  .drop .big{font-family:'Saira';font-size:16px;font-weight:600;margin:8px 0 4px}
+  .drop .small{font-size:12px;color:var(--faint);font-family:'JetBrains Mono'}
+  video{width:100%;max-height:300px;border-radius:12px;background:#000;margin-top:10px}
+  .filemeta{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--ink);font-family:'JetBrains Mono';font-size:13px;outline:none;resize:vertical;min-height:70px;line-height:1.6;margin-top:14px}
+  textarea:focus{border-color:rgba(245,177,61,.6)}
+  .btn{background:var(--gold);color:#ffffff;font-family:'Saira';font-weight:600;font-size:15px;border:none;border-radius:12px;padding:13px;cursor:pointer;width:100%;margin-top:14px;transition:.15s}
+  .btn:hover{background:#ff3b46}.btn:disabled{background:var(--surface2);color:var(--faint);cursor:not-allowed}
+  .clear{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:4px 10px;font-family:'JetBrains Mono';font-size:10px;cursor:pointer}
+  .clear:hover{border-color:var(--red);color:var(--red)}
+
+  /* despiece */
+  .scorebox{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:6px}
+  .scorenum{font-family:'Saira';font-size:54px;font-weight:700;line-height:1}
+  .verdict{font-family:'Saira';font-size:17px;font-weight:500;flex:1;min-width:200px}
+  .why{background:var(--gold-soft);border:1px solid rgba(245,177,61,.25);border-radius:10px;padding:13px 15px;margin:14px 0;font-size:13.5px;line-height:1.6}
+  .vbanner{border-radius:14px;padding:16px;margin-bottom:16px;border:1px solid}
+  .vbanner.win{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.35)}
+  .vbanner.lose{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.35)}
+  .vbanner .vt{font-family:'Saira';font-weight:700;font-size:17px;margin-bottom:11px}
+  .vbanner.win .vt{color:var(--green)} .vbanner.lose .vt{color:var(--red)}
+  .kpis{display:flex;flex-wrap:wrap;gap:7px}
+  .kpi{font-family:'JetBrains Mono';font-size:11px;padding:4px 9px;border-radius:7px;border:1px solid var(--border)}
+  .kpi.ok{color:var(--green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.07)}
+  .kpi.bad{color:var(--red);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.07)}
+  .vfail{font-size:12.5px;color:var(--red);margin-top:11px;line-height:1.5}
+  .layer{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+  .layer:last-child{border:none}
+  .layer .ln{font-family:'JetBrains Mono';font-size:11px;color:var(--gold);width:120px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+  .layer .lv{font-size:13.5px;color:var(--ink);line-height:1.55}
+  .layer .lv .small{color:var(--muted);font-size:12.5px}
+  /* capas en 2 columnas con calificación */
+  .layer2{display:grid;grid-template-columns:1fr 92px;gap:14px;align-items:start;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);margin-bottom:10px}
+  .l2-name{font-family:'JetBrains Mono';font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+  .l2-text{font-size:13.5px;color:var(--ink);line-height:1.55}
+  .l2-text .small{color:var(--muted);font-size:12.5px}
+  .l2-rate{text-align:center;padding-top:18px}
+  .ratebadge{display:inline-block;font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.04em;padding:5px 0;width:100%;border-radius:8px;text-transform:uppercase}
+  .ratebadge.alto{color:var(--green);background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.3)}
+  .ratebadge.medio{color:var(--yellow);background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.3)}
+  .ratebadge.bajo{color:var(--red);background:rgba(255,92,106,.12);border:1px solid rgba(255,92,106,.3)}
+  .ratebadge.na{color:var(--faint);background:var(--surface)}
+  .ratelabel{font-family:'JetBrains Mono';font-size:8px;color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+
+  /* fabrica */
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px}
+  @media(max-width:680px){.modes{grid-template-columns:1fr}}
+  .mode{border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.13s;background:var(--bg)}
+  .mode:hover{border-color:rgba(245,177,61,.5)}
+  .mode.sel{border-color:var(--gold);background:var(--gold-soft)}
+  .mode .mt{font-family:'Saira';font-weight:600;font-size:14px;margin-bottom:4px}
+  .mode .md{font-size:12px;color:var(--muted);line-height:1.45}
+  .panel{border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px;background:var(--bg)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chip{border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:.12s;background:var(--surface)}
+  .chip:hover{border-color:rgba(245,177,61,.5);color:var(--ink)}
+  .chip.sel{border-color:var(--gold);background:var(--gold-soft);color:var(--gold)}
+  .freein{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:'JetBrains Mono';font-size:13px;outline:none}
+  .freein:focus{border-color:rgba(245,177,61,.6)}
+  .small-label{font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:10px 0 6px}
+  .numrow{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .numrow input{width:64px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--ink);font-family:'JetBrains Mono';text-align:center}
+
+  /* resultados */
+  .result{border:1px solid var(--border);border-radius:14px;background:var(--surface);margin-bottom:14px;overflow:hidden}
+  .result .rh{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--surface2);cursor:pointer}
+  .result .rh .rt{font-family:'Saira';font-weight:600;font-size:14px}
+  .result .rh .rt span{color:var(--gold);font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-left:8px}
+  .result .rb{padding:16px;font-size:14px;line-height:1.6;display:block}
+  .result.collapsed .rb{display:none}
+  .result h3{font-family:'Saira';font-size:15px;margin:12px 0 6px;color:var(--gold)}
+  .result strong{color:#fff} .result ul{margin:6px 0 8px;padding-left:18px} .result li{margin:3px 0}
+  .result p{margin:0 0 8px} .result p:last-child{margin:0}
+  .codeblock{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin:8px 0;font-family:'JetBrains Mono';font-size:12.5px;color:#cfe3ff;white-space:pre-wrap;line-height:1.55}
+  .codeblock .cp{position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:3px 9px;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+  .codeblock .cp:hover{border-color:var(--gold);color:var(--gold)}
+
+  .status{font-family:'JetBrains Mono';font-size:13px;color:var(--gold);margin-top:12px;text-align:center}
+  .err{font-size:13px;color:var(--red);background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.25);border-radius:10px;padding:12px 14px;margin-top:12px;line-height:1.6}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px;margin-right:7px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .hidden{display:none}
+  /* nav */
+  .nav{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+  .navbtn{background:none;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Saira';font-weight:600;font-size:14px;padding:10px 14px;cursor:pointer;transition:.13s;margin-bottom:-1px}
+  .navbtn:hover{color:var(--ink)}
+  .navbtn.active{color:var(--gold);border-bottom-color:var(--gold)}
+  .navbtn .step{font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-right:6px}
+  /* tracker */
+  .trkhead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .trkstats{display:flex;gap:10px;flex-wrap:wrap}
+  .tstat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 16px;text-align:center}
+  .tstat .n{font-family:'Saira';font-size:24px;font-weight:700}
+  .tstat .l{font-family:'JetBrains Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+  .trkpanel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px}
+  .trkgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  @media(max-width:760px){.trkgrid{grid-template-columns:repeat(2,1fr)}}
+  .trkgrid .full{grid-column:1/-1}
+  .trkwrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px}
+  table.trk{width:100%;border-collapse:collapse;font-size:12.5px;min-width:880px}
+  table.trk th{font-family:'JetBrains Mono';font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;padding:11px 12px;background:var(--surface2);white-space:nowrap;border-bottom:1px solid var(--border)}
+  table.trk td{padding:11px 12px;border-bottom:1px solid var(--border);white-space:nowrap;color:var(--ink)}
+  table.trk tr:last-child td{border-bottom:none}
+  table.trk tr:hover td{background:var(--surface)}
+  .vbadge{font-family:'JetBrains Mono';font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;text-transform:uppercase}
+  .vbadge.win{color:var(--green);background:rgba(52,211,153,.12)}
+  .vbadge.lose{color:var(--red);background:rgba(251,113,133,.12)}
+  .vbadge.na{color:var(--faint);background:var(--surface2)}
+  .vbadge.up{color:var(--gold);background:rgba(245,177,61,.12)}
+  .vidcard{border:1px solid var(--border);border-radius:14px;background:var(--surface);margin-bottom:14px;overflow:hidden}
+  .vidcard-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:var(--surface2);flex-wrap:wrap}
+  .vidcard-head .vn{font-family:'Saira';font-weight:600;font-size:15px;flex:1;min-width:150px}
+  .vidcard-head .vn a{color:var(--ink)}
+  .vidcard-body{padding:14px 16px}
+  .dayform{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px}
+  .miniaddbtn{background:none;border:1px dashed var(--border);color:var(--muted);border-radius:9px;padding:8px 14px;font-family:'JetBrains Mono';font-size:11px;cursor:pointer;margin-top:10px}
+  .miniaddbtn:hover{border-color:var(--gold);color:var(--gold)}
+  .vidbtns{display:flex;gap:10px}
+  .vbtn{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--ink);font-family:'Saira';font-weight:600;font-size:13px;padding:10px;border-radius:10px;cursor:pointer;transition:.13s}
+  .vbtn:hover{border-color:var(--gold)}
+  .vbtn.on{border-color:var(--gold);color:var(--gold)}
+  .vbtn.test{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .vbtn.test:hover{background:#ff3b46}
+  .vbtn.test.on{background:#ff3b46}
+  .dash-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border)}
+  .dash-row:last-child{border:none}
+  .dash-rank{font-family:'Saira';font-weight:700;font-size:18px;color:var(--gold);width:26px;text-align:center}
+  .dash-name{flex:1;font-weight:600;font-size:13.5px}
+  .dash-cpa{font-family:'JetBrains Mono';font-size:12.5px;color:var(--green);white-space:nowrap}
+  .trkact{background:none;border:none;color:var(--faint);cursor:pointer;font-size:13px;padding:2px 5px}
+  .trkact:hover{color:var(--gold)} .trkact.d:hover{color:var(--red)}
+  .vidname{font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><span class="dot"></span>
+      <div><h1>VIDEO<b>·</b>FLOW</h1><div class="tag">by @fabripaca</div></div>
+    </div>
+    <button class="cfgbtn" id="cfgToggle">Clave</button>
+  </header>
+
+  <div id="cfg">
+    <label>API key de Google AI Studio</label>
+    <input type="password" id="apikey" placeholder="Pega tu clave de Gemini (se guarda solo en este navegador)" />
+    <div class="note">¿No tienes? Gratis en <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a></div>
+    <label style="margin-top:14px">Modelo</label>
+    <select id="model">
+      <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite — gratis (recomendado)</option>
+      <option value="gemini-3.5-flash">Gemini 3.5 Flash — más fino (requiere facturación)</option>
+    </select>
+  </div>
+
+  <nav class="nav">
+    <button class="navbtn active" id="tabStudio"><span class="step">1·2</span>Estudio de winners</button>
+    <button class="navbtn" id="tabTracker"><span class="step">3</span>Tracker de resultados</button>
+  </nav>
+
+  <div id="viewStudio">
+  <div class="grid">
+    <aside class="side">
+      <h2>Biblioteca</h2>
+      <div class="sidebtns">
+        <button class="newbtn" id="newBtn">+ Nuevo Video</button>
+        <button class="foldbtn" id="newFolderBtn" title="Crear carpeta">Crear Carpeta</button>
+      </div>
+      <div id="library"></div>
+    </aside>
+
+    <main class="main" id="main"></main>
+  </div>
+  </div>
+
+  <div id="viewTracker" class="hidden"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const API = "https://generativelanguage.googleapis.com";
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+// ---------- KPI thresholds (reglas duras del negocio, en soles) ----------
+const KPI = [
+  {key:"cpm",  label:"CPM",     max:30,  fmt:v=>"S/"+v, rule:"≤ S/30"},
+  {key:"cpc",  label:"CPC",     max:0.90,fmt:v=>"S/"+v, rule:"≤ S/0.90"},
+  {key:"ctr",  label:"CTR",     min:2,   fmt:v=>v+"%",  rule:"≥ 2%"},
+  {key:"hook", label:"Hook 3s", min:60,  fmt:v=>v+"%",  rule:"≥ 60%"},
+  {key:"cpa",  label:"CPA",     max:15,  fmt:v=>"S/"+v, rule:"≤ S/15"},
+];
+function evalPerf(m){
+  if(!m) return {anyData:false};
+  const checks=[]; let anyData=false, allPass=true;
+  for(const k of KPI){
+    const raw=m[k.key];
+    if(raw==null||raw==="") continue;
+    const v=parseFloat(String(raw).replace(",",".")); if(isNaN(v)) continue;
+    anyData=true;
+    let pass=true;
+    if(k.min!=null && v<k.min) pass=false;
+    if(k.max!=null && v>k.max) pass=false;
+    if(!pass) allPass=false;
+    checks.push({label:k.label, value:k.fmt(v), pass, rule:k.rule});
+  }
+  return {anyData, isWinner:allPass, checks};
+}
+
+// ---------- format catalog (recipes) ----------
+const FORMATS = {
+  "Podcast": "Estilo podcast (AvatarHype): una o dos personas en un set con micrófonos, plano fijo, vertical 9:16, subtítulos grandes. Construye autoridad y confianza antes de vender. Tono de conversación experta.",
+  "UGC": "Estilo UGC (AvatarHype): una persona recomendando el producto como si fuera un cliente más, selfie/casero, vertical 9:16, luz natural, auténtico. El más versátil para testear rápido.",
+  "DualCast": "Estilo DualCast (AvatarHype): dos personas en cámara a la vez, hablando, interactuando entre ellas y con el viewer, vertical 9:16. Dinámico y muy efectivo.",
+  "Animado · Frutinovela": "Animado (AvatarHype), sub-estilo frutinovela: frutas humanizadas 3D estilo Pixar en mini trama de telenovela (drama, exageración), colores vivos, voces dramáticas, vertical 9:16. Personajes con los mismos rasgos en cada escena.",
+  "Animado · Calaveras": "Animado (AvatarHype), sub-estilo calaveras: personajes calavera/esqueleto humanizados (estética dark/día de muertos) en mini drama, vertical 9:16. Personajes consistentes entre escenas.",
+  "Animado · 3D": "Animado (AvatarHype), sub-estilo 3D Pixar: personajes 3D expresivos (puede ser una mascota del producto), colores saturados, movimiento fluido, estructura problema-solución y antes/después con punch, vertical 9:16.",
+  "UGC voz en off": "Estilo UGC con voz en off (AvatarHype): footage tipo UGC con una voz superpuesta encima, vertical 9:16. Ideal para storytelling, demos rápidas y situaciones cotidianas donde lo visual respalda el mensaje.",
+  "Imágenes para ads": "Estilo Imágenes para ads (AvatarHype): estáticos para feed/banner/carrusel — testimonios, antes y después, estilo Reddit, comparaciones. Sin grabación; 9:16 o 1:1.",
+  "Tendencias virales": "Estilo Tendencias (AvatarHype): adapta el trend que esté explotando AHORA en TikTok/Reels/Shorts al producto, sin que se sienta forzado y montándote en la ola en el momento justo. Vertical 9:16. Indica qué trend usar y por qué."
+};
+
+const PROD_SYS = `Eres director creativo de performance ads para e-commerce COD en LatAm. Escribes BRIEFS DE DIRECCIÓN para el EDITOR del equipo. NO generas prompts de IA: el editor arma los prompts por su cuenta en sus herramientas. Tu trabajo es decirle con claridad QUÉ video queremos lograr.
+REGLAS FIJAS, sin excepción:
+- TODO en ESPAÑOL neutro/peruano. Nada en inglés.
+- Formato SIEMPRE VERTICAL 9:16 (es para Meta/TikTok). NUNCA horizontal.
+- Mantén intacto lo que ya gana (guion, audio/locución, oferta) y describe SOLO lo que cambia.
+- Sé FIEL al formato pedido: si es podcast, descríbelo como podcast; si es animado, como animación; etc.
+- Describe escena por escena qué debe VERSE y OÍRSE, en lenguaje de dirección para el editor (no prompts técnicos). Puedes sugerir con qué herramienta producir cada parte (VEO3 para clips, Nano Banana para imágenes, grabación real), pero NO escribas el prompt — solo la indicación de qué lograr.
+- Regla de oro: cambia UNA capa a la vez.
+EL EQUIPO PRODUCE CON AVATARHYPE (curso con 7 formatos: Podcast, UGC, DualCast, Animados —sub-estilos frutinovela/calaveras/3D—, UGC con voz en off, Imágenes para ads, Tendencias virales; cada formato tiene su propio agente/GPT y biblioteca de música y efectos).
+CIERRA SIEMPRE el brief con una sección "### → Producción en AvatarHype" que diga, en 2-3 líneas accionables: a qué módulo/formato de AvatarHype corresponde este brief, que el editor abra el agente de ESE módulo y le pegue este brief para generar los prompts, y de dónde sacar la música (biblioteca de AvatarHype o Epidemic). Si el formato es un sub-estilo animado (frutinovela/calaveras/3D), el módulo es "Animados".
+Responde en markdown limpio: ### para secciones, **negritas** para resaltar, listas cuando ayuden. SIN bloques de código y SIN prompts en inglés.`;
+
+// ---------- state ----------
+let lib = [];
+let folders = [];
+let openFolders = {};
+let tracker = [];
+let editingTrk = null;
+let current = null;       // analysis object
+let videoFile = null;
+let selectedMode = null;  // 'format' | 'hook' | 'body'
+let selectedFormat = null;
+
+// ---------- config persistence ----------
+const keyInput = $("#apikey");
+keyInput.value = localStorage.getItem("vf_key") || "";
+keyInput.addEventListener("input", ()=>localStorage.setItem("vf_key", keyInput.value.trim()));
+$("#model").value = localStorage.getItem("vf_model") || "gemini-3.1-flash-lite";
+$("#model").addEventListener("change", e=>localStorage.setItem("vf_model", e.target.value));
+$("#cfgToggle").addEventListener("click", ()=>$("#cfg").classList.toggle("open"));
+
+// ---------- library ----------
+function loadLib(){
+  try{ lib = JSON.parse(localStorage.getItem("vf_library")||"[]"); }catch(e){ lib=[]; }
+  try{ folders = JSON.parse(localStorage.getItem("vf_folders")||"[]"); }catch(e){ folders=[]; }
+  try{ tracker = JSON.parse(localStorage.getItem("vf_tracker")||"[]"); }catch(e){ tracker=[]; }
+}
+function saveLib(){
+  localStorage.setItem("vf_library", JSON.stringify(lib));
+  localStorage.setItem("vf_folders", JSON.stringify(folders));
+  localStorage.setItem("vf_tracker", JSON.stringify(tracker));
+}
+function folderOpen(id){ return openFolders[id]!==false; }
+
+function libItemHtml(w){
+  return `<div class="libitem ${current&&current._id===w._id?'active':''}" data-id="${w._id}">
+     <div class="nm">${escAttr(w.nombre||"Winner")}</div>
+     <div class="sc">Score ${w.scoreCreativo||"—"} · ${w._date}</div>
+     <button class="del" data-del="${w._id}">×</button>
+   </div>`;
+}
+function folderHtml(f){
+  const items=lib.filter(w=>w._folder===f.id);
+  const open=folderOpen(f.id);
+  const drive = f.drive
+    ? `<a class="ficon" href="${escAttr(f.drive)}" target="_blank" rel="noopener" title="Abrir carpeta en Drive">📁</a>`
+    : `<button class="ficon dim" data-drive="${f.id}" title="Conectar carpeta de Drive">📁</button>`;
+  return `<div class="folder">
+    <div class="fhead" data-fold="${f.id}">
+      <span class="fcaret">${open?'▾':'▸'}</span>
+      <span class="fname">${escHtml(f.name)}</span>
+      <span class="fcount">${items.length}</span>
+      ${drive}
+      <button class="ficon" data-ren="${f.id}" title="Renombrar">✎</button>
+      <button class="ficon delf" data-delf="${f.id}" title="Eliminar carpeta">×</button>
+    </div>
+    ${open?`<div class="fitems">${items.map(libItemHtml).join("")||'<div class="libempty" style="padding:8px 4px">Vacía — mueve un winner aquí desde su despiece.</div>'}</div>`:''}
+  </div>`;
+}
+function renderLib(){
+  const el=$("#library");
+  let html = folders.map(folderHtml).join("");
+  const loose=lib.filter(w=>!w._folder || !folders.find(f=>f.id===w._folder));
+  if(loose.length || folders.length===0){
+    const open=folderOpen("__none");
+    html += `<div class="folder">
+      <div class="fhead" data-fold="__none">
+        <span class="fcaret">${open?'▾':'▸'}</span>
+        <span class="fname" style="color:var(--muted)">Sin carpeta</span>
+        <span class="fcount">${loose.length}</span>
+      </div>
+      ${open?`<div class="fitems">${loose.map(libItemHtml).join("")||'<div class="libempty" style="padding:8px 4px">Vacía</div>'}</div>`:''}
+    </div>`;
+  }
+  if(!lib.length && !folders.length) html=`<div class="libempty">Aún no hay winners.<br>Sube el primero arriba.</div>`;
+  el.innerHTML=html;
+}
+
+// ----- folder actions -----
+function newFolder(){
+  const name=prompt("Nombre del producto (ej: Lámpara, Tazas, Luces):");
+  if(!name||!name.trim()) return;
+  folders.unshift({id:"f"+Date.now(), name:name.trim(), drive:""});
+  saveLib(); renderLib();
+}
+function renameFolder(id){
+  const f=folders.find(x=>x.id===id); if(!f) return;
+  const n=prompt("Nuevo nombre:", f.name); if(n&&n.trim()){ f.name=n.trim(); saveLib(); renderLib(); }
+}
+function setFolderDrive(id){
+  const f=folders.find(x=>x.id===id); if(!f) return;
+  const u=prompt("Pega el link de la carpeta de Google Drive (donde tu equipo verá y subirá los videos):", f.drive||"");
+  if(u!==null){ f.drive=u.trim(); saveLib(); renderLib(); }
+}
+function deleteFolder(id){
+  const f=folders.find(x=>x.id===id); if(!f) return;
+  if(!confirm(`¿Eliminar la carpeta "${f.name}"? Los winners que tenga pasarán a "Sin carpeta".`)) return;
+  folders=folders.filter(x=>x.id!==id);
+  lib.forEach(w=>{ if(w._folder===id) w._folder=null; });
+  saveLib(); renderLib();
+}
+function moveWinner(winId, folderId){
+  const w=lib.find(x=>x._id===winId); if(!w) return;
+  w._folder=folderId||null; saveLib(); renderLib();
+}
+
+// ----- delegated events on sidebar -----
+$("#newFolderBtn").addEventListener("click", newFolder);
+$("#library").addEventListener("click", e=>{
+  const t=e.target;
+  if(t.dataset.drive){ setFolderDrive(t.dataset.drive); return; }
+  if(t.dataset.ren){ renameFolder(t.dataset.ren); return; }
+  if(t.dataset.delf){ deleteFolder(t.dataset.delf); return; }
+  if(t.dataset.del){ e.stopPropagation();
+    const id=t.dataset.del; lib=lib.filter(x=>x._id!==id); saveLib();
+    if(current&&current._id===id){ current=null; showIngesta(); }
+    renderLib(); return; }
+  const item=t.closest(".libitem");
+  if(item){ const w=lib.find(x=>x._id===item.dataset.id); if(w){ current=w; renderWinner(); renderLib(); } return; }
+  const head=t.closest(".fhead");
+  if(head){ const id=head.dataset.fold; openFolders[id]=!folderOpen(id); renderLib(); }
+});
+
+// ---------- views ----------
+$("#newBtn").addEventListener("click", ()=>{ current=null; videoFile=null; showIngesta(); renderLib(); });
+
+function showIngesta(){
+  $("#main").innerHTML = `
+    <div class="card">
+      <div class="label">Nuevo winner · ingesta</div>
+      <div id="drop" class="drop">
+        <div class="icon">⤓</div>
+        <div class="big">Arrastra el video ganador</div>
+        <div class="small">o haz clic para elegirlo · mp4, mov, webm</div>
+      </div>
+      <input type="file" id="videoInput" accept="video/*" hidden />
+      <div id="videoPreview"></div>
+
+      <div class="small-label" style="margin-top:18px">Link de tu tienda / landing &nbsp;<span style="color:var(--faint);text-transform:none;letter-spacing:0">— la IA la lee para medir concordancia</span></div>
+      <input class="freein" id="store" placeholder="https://tutienda.com/producto" />
+
+      <div class="small-label" style="margin-top:16px">Métricas de Meta &nbsp;<span style="color:var(--faint);text-transform:none;letter-spacing:0">— opcional · para saber si el problema es el video</span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <input class="freein" id="m_cpm" placeholder="CPM" inputmode="decimal" />
+        <input class="freein" id="m_cpc" placeholder="CPC" inputmode="decimal" />
+        <input class="freein" id="m_ctr" placeholder="CTR %" inputmode="decimal" />
+        <input class="freein" id="m_hook" placeholder="Hook 3s %" inputmode="decimal" />
+        <input class="freein" id="m_cpa" placeholder="CPA" inputmode="decimal" />
+      </div>
+
+      <textarea id="ctx" placeholder="Opcional: producto, oferta o cualquier nota extra."></textarea>
+      <div class="small-label" style="margin-top:14px">Guardar en carpeta</div>
+      <select class="freein" id="ingFolder">
+        <option value="">Sin carpeta</option>
+        ${folders.map(f=>`<option value="${escAttr(f.id)}">${escHtml(f.name)}</option>`).join("")}
+      </select>
+      <button class="btn" id="analyzeBtn" disabled>Analizar y despiezar →</button>
+      <div id="status"></div>
+    </div>`;
+  const drop=$("#drop"), vi=$("#videoInput");
+  drop.addEventListener("click",()=>vi.click());
+  ["dragover","dragenter"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
+  ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
+  drop.addEventListener("drop",e=>{const f=e.dataTransfer.files[0];if(f&&f.type.startsWith("video/"))setVideo(f);});
+  vi.addEventListener("change",e=>{if(e.target.files[0])setVideo(e.target.files[0]);});
+  $("#analyzeBtn").addEventListener("click", analyzeWinner);
+}
+function setVideo(f){
+  videoFile=f;
+  const url=URL.createObjectURL(f);
+  $("#videoPreview").innerHTML=`<video src="${url}" controls></video>
+    <div class="filemeta"><span>${escAttr(f.name)} · ${(f.size/1048576).toFixed(1)} MB</span>
+    <button class="clear" id="clearVid">Quitar</button></div>`;
+  $("#clearVid").addEventListener("click",()=>{videoFile=null;$("#videoPreview").innerHTML="";$("#analyzeBtn").disabled=true;});
+  $("#analyzeBtn").disabled=false;
+}
+
+// ---------- analyze ----------
+async function analyzeWinner(){
+  const key=keyInput.value.trim();
+  if(!key){ $("#cfg").classList.add("open"); setStatus("","Pega tu clave de Gemini arriba (botón Clave)."); return; }
+  if(!videoFile) return;
+  const ctx = $("#ctx").value.trim();
+  const store = $("#store").value.trim();
+  const M = id => ($("#"+id)?.value||"").trim();
+  const mets = [["CPM",M("m_cpm")],["CPC",M("m_cpc")],["CTR",M("m_ctr")+"%"],["Hook 3s",M("m_hook")+"%"],["CPA",M("m_cpa")]]
+    .filter(([k,v])=>v && v!=="%").map(([k,v])=>`${k}: ${v}`).join(" · ");
+  $("#analyzeBtn").disabled=true;
+  try{
+    setStatus("Subiendo el video…");
+    const f = await uploadVideo(videoFile,key);
+    setStatus("Procesando el video…");
+    const ready = await waitActive(f.name,key);
+    setStatus(store?"Leyendo tu tienda y despiezando el winner…":"Despiezando el winner…");
+    const prompt = `Analiza este video de anuncio (Meta Ads, e-commerce COD LatAm) y descompónlo en capas para poder replicarlo.
+${ctx?"Contexto del equipo: "+ctx+"\n":""}${store?"LANDING/TIENDA: lee la página en "+store+" y evalúa la CONCORDANCIA de mensaje entre el video y la landing (mismo claim, misma promesa, mismo público, mismo tono). Señala fugas.\n":""}${mets?"MÉTRICAS DE META reportadas: "+mets+".\nUMBRALES DEL NEGOCIO (Perú, soles): CTR sano ≥2% (menos = MALO) · CPC ≤ S/0.90 · CPM ≤ S/30 · CPA ≤ S/15 · Hook 3s ≥60% (menos = el hook tiene mucho por mejorar). Una métrica fuera de su umbral es MALA — NO la trates como saludable.\nHaz un DIAGNÓSTICO DE EMBUDO claro y directo, en lenguaje simple:\n- Hook 3s por debajo de 60% => el problema ES el VIDEO (el hook no retiene).\n- Hook ok pero CTR <2% => el problema es la OFERTA/ÁNGULO/CTA del video.\n- Si el video cumple las métricas de un video saludable (Hook ≥60%, CTR ≥2%) pero el CPA está caro (> S/15) => deja CLARÍSIMO que el problema NO es el video. El video está haciendo su trabajo (atrae y da clics). El problema está DESPUÉS del clic: en el ECOSISTEMA — la landing, la oferta/precio, la confirmación o la operación COD. Recomienda revisar la landing y el ecosistema, NO tocar el video.\n- CPM > S/30 => es la subasta/audiencia/cuenta, no la creatividad.\nEscribe la 'lectura' y la 'recomendacion' de forma que cualquiera lo entienda.\n":""}
+Para el scoreCreativo usa una escala REALISTA del 1 al 10 (1=malo, 5=promedio, 8-10=excelente). Sé honesto y crítico según lo que realmente ves; no infles la nota.
+Para cada capa (hook, cuerpo, oferta, formato) asigna un "nivel" de qué tan bien está LOGRADA en el video: "bajo", "medio" o "alto".
+Responde ÚNICAMENTE con JSON válido (sin markdown), en español, con este esquema EXACTO:
+{
+ "nombre":"<nombre corto del producto/ángulo para la biblioteca>",
+ "scoreCreativo":<1-10>,
+ "veredicto":"<1-2 frases del porqué gana>",
+ "porQueGana":"<2-4 frases>",
+ "driver":"<qué capa carga el resultado>",
+ "capas":{
+   "hook":{"nivel":"bajo|medio|alto","textoEnPantalla":"<lo que aparece escrito 0-3s>","locucion":"<lo que se dice 0-3s>","visual":"<qué se ve>","porQueFunciona":"<...>"},
+   "cuerpo":{"nivel":"bajo|medio|alto","resumen":"<estructura del desarrollo>","elementos":["<demostración, prueba, etc.>"]},
+   "oferta":{"nivel":"bajo|medio|alto","oferta":"<la oferta>","cta":"<el llamado a la acción>"},
+   "formato":{"nivel":"bajo|medio|alto","formatoOriginal":"<UGC / estudio / animado / etc.>"}
+ },
+ "concordancia":${store?'{"nivel":"alta|media|baja","detalle":"<qué tan bien la landing continúa la promesa del video>","fugas":["<desajuste 1>"]}':'null'},
+ "diagnosticoEmbudo":${mets?'{"esElVideo":"sí|parcial|no","lectura":"<explica en lenguaje simple qué dicen las métricas y dónde está el problema>","recomendacion":"<tocar el video, o revisar landing/oferta/ecosistema/operación>"}':'null'},
+ "guion":[{"bloque":"<Hook/Problema/Demo/Promesa/Cierre>","tiempo":"<0-3s>","locucion":"<lo que se dice>","visual":"<lo que se ve>","textoEnPantalla":"<subtítulo/texto>"}]
+}`;
+    const parts=[{file_data:{mime_type:ready.mimeType,file_uri:ready.uri}},{text:prompt}];
+    const tools = store ? [{url_context:{}}] : undefined;
+    const data = await gen(parts, key, {}, undefined, tools);
+    const txt=(data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
+    const a = JSON.parse(stripJSON(txt));
+    a._id = "w"+Date.now();
+    a._date = new Date().toLocaleDateString("es-PE",{day:"2-digit",month:"short"});
+    a._metrics = {cpm:M("m_cpm"), cpc:M("m_cpc"), ctr:M("m_ctr"), hook:M("m_hook"), cpa:M("m_cpa")};
+    a._folder = ($("#ingFolder")?.value) || null;
+    lib.unshift(a); saveLib();
+    current=a; videoFile=null;
+    renderWinner(); renderLib();
+  }catch(e){ setStatus("", errMsg(e)); $("#analyzeBtn").disabled=false; }
+}
+
+// ---------- render winner (despiece + fábrica) ----------
+function rateBadge(nivel){
+  const n=(nivel||"").toLowerCase();
+  if(n==="alto") return '<span class="ratebadge alto">Alto</span>';
+  if(n==="medio") return '<span class="ratebadge medio">Medio</span>';
+  if(n==="bajo") return '<span class="ratebadge bajo">Bajo</span>';
+  return '<span class="ratebadge na">—</span>';
+}
+function renderWinner(){
+  const a=current;
+  const color = a.scoreCreativo>=7?"var(--green)":a.scoreCreativo>=5?"var(--yellow)":"var(--red)";
+  const c=a.capas||{};
+  const guion=(a.guion||[]).map(g=>
+    `<div class="layer"><div class="ln">${escHtml(g.bloque||"")}<br><span style="color:var(--faint)">${escHtml(g.tiempo||"")}</span></div>
+     <div class="lv"><span class="small">🔊 ${escHtml(g.locucion||"—")}</span><br>🎬 ${escHtml(g.visual||"—")}${g.textoEnPantalla?`<br>💬 ${escHtml(g.textoEnPantalla)}`:""}</div></div>`).join("");
+  const lvlColor = n => /alta|alto|^sí|si$|no$/i.test(n||"") ? (/^no/i.test(n)?"var(--red)":"var(--green)") : "var(--yellow)";
+  const diag = a.diagnosticoEmbudo;
+  const diagHtml = diag ? `
+      <div class="why" style="background:var(--surface2);border-color:var(--border)">
+        <strong>Diagnóstico de embudo · ¿es el video?</strong>
+        <span class="mono" style="color:${lvlColor(diag.esElVideo)};font-size:11px;margin-left:6px;text-transform:uppercase">${escHtml(diag.esElVideo||"")}</span>
+        <br>${escHtml(diag.lectura||"")}
+        ${diag.recomendacion?`<br><br><strong>Recomendación:</strong> ${escHtml(diag.recomendacion)}`:""}
+      </div>` : "";
+  const conc = a.concordancia;
+  const concHtml = conc ? `
+      <div class="layer"><div class="ln">Concordancia<br><span style="color:${lvlColor(conc.nivel)}">${escHtml((conc.nivel||"").toUpperCase())}</span></div>
+        <div class="lv">${escHtml(conc.detalle||"—")}${(conc.fugas&&conc.fugas.length)?`<br><span class="small">⚠ ${conc.fugas.map(escHtml).join(" · ")}</span>`:""}</div></div>` : "";
+  const perf = evalPerf(a._metrics);
+  let perfHtml = "";
+  if(perf.anyData){
+    const chips = perf.checks.map(c=>`<span class="kpi ${c.pass?'ok':'bad'}">${escHtml(c.label)} ${escHtml(c.value)} ${c.pass?'✓':'✗'}</span>`).join("");
+    const fails = perf.checks.filter(c=>!c.pass).map(c=>`${c.label} ${c.value} (mín/máx ${c.rule})`).join(" · ");
+    perfHtml = `<div class="vbanner ${perf.isWinner?'win':'lose'}">
+      <div class="vt">${perf.isWinner?'✅ WINNER — cumple los números':'⛔ NO es winner — no cumple los mínimos'}</div>
+      <div class="kpis">${chips}</div>
+      ${perf.isWinner?'':`<div class="vfail">Falla: ${escHtml(fails)}</div>`}</div>`;
+  }
+  $("#main").innerHTML = `
+    <div class="card">
+      <div class="label">${escHtml(a.nombre||"Winner")}</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <span class="small-label" style="margin:0">Carpeta:</span>
+        <select class="freein" id="winFolder" style="width:auto;min-width:150px;padding:7px 10px">
+          <option value="">Sin carpeta</option>
+          ${folders.map(f=>`<option value="${escAttr(f.id)}" ${a._folder===f.id?'selected':''}>${escHtml(f.name)}</option>`).join("")}
+        </select>
+        ${(()=>{ const f=folders.find(x=>x.id===a._folder); return f&&f.drive?`<a href="${escAttr(f.drive)}" target="_blank" rel="noopener" class="ficon" style="font-size:14px" title="Abrir carpeta en Drive">📁 Drive</a>`:''; })()}
+      </div>
+      ${perfHtml}
+      <div class="scorebox">
+        <div style="text-align:center">
+          <div class="scorenum" style="color:${color}">${a.scoreCreativo||0}</div>
+          <div class="mono" style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:2px">Calidad creativa</div>
+        </div>
+        <div class="verdict">${escHtml(a.veredicto||"")}</div></div>
+      <div class="why"><strong>Por qué gana (como pieza):</strong> ${escHtml(a.porQueGana||"")}${a.driver?`<br><span class="mono" style="color:var(--gold);font-size:11px">DRIVER: ${escHtml(a.driver)}</span>`:""}</div>
+      ${diagHtml}
+      <div class="label" style="margin-top:6px">Las 5 capas</div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Hook</div><div class="l2-text">${escHtml(c.hook?.locucion||c.hook?.textoEnPantalla||"—")}<br><span class="small">${escHtml(c.hook?.visual||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.hook?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Cuerpo</div><div class="l2-text">${escHtml(c.cuerpo?.resumen||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.cuerpo?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Oferta / CTA</div><div class="l2-text">${escHtml(c.oferta?.oferta||"—")} <span class="small">· ${escHtml(c.oferta?.cta||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.oferta?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Formato</div><div class="l2-text">${escHtml(c.formato?.formatoOriginal||c.formatoOriginal||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.formato?.nivel)}</div></div>
+      ${concHtml}
+      <div class="label" style="margin-top:16px">Guion (audio + visual)</div>
+      ${guion||'<div class="sub">No se extrajo guion.</div>'}
+    </div>
+
+    <div class="card">
+      <div class="label">Fábrica · elige qué capa variar</div>
+      <div class="modes">
+        <div class="mode" data-mode="format"><div class="mt">Cambiar formato</div><div class="md">Mismo guion y audio, otro estilo visual.</div></div>
+        <div class="mode" data-mode="hook"><div class="mt">Variar hook</div><div class="md">Mismo cuerpo, nuevos ganchos 0-3s.</div></div>
+        <div class="mode" data-mode="body"><div class="mt">Variar cuerpo</div><div class="md">Mismo hook, nuevos desarrollos.</div></div>
+      </div>
+      <div id="modePanel"></div>
+      <div id="genStatus"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">📤 Mandar al Tracker</div>
+      <div class="sub">Cuando subas el video al Drive, escribe cómo lo nombraste y pega el link de su carpeta. Se crea solo en la página 3 (Tracker).</div>
+      <input class="freein" id="toTrkName" placeholder="PRODUCTO 13/07 - VID 1" />
+      <input class="freein" id="toTrkDrive" placeholder="Link de la carpeta en Drive (para abrirlo/descargarlo)" style="margin-top:8px" />
+      <button class="btn" id="toTrkBtn">Mandar al Tracker →</button>
+      <div id="toTrkMsg"></div>
+    </div>
+    <div id="results"></div>`;
+  selectedMode=null; selectedFormat=null;
+  document.querySelectorAll(".mode").forEach(m=>m.addEventListener("click",()=>selectMode(m.dataset.mode)));
+  const wf=$("#winFolder"); if(wf) wf.addEventListener("change",e=>moveWinner(a._id, e.target.value));
+  const ttb=$("#toTrkBtn"); if(ttb) ttb.addEventListener("click",()=>{
+    const name=$("#toTrkName").value.trim();
+    if(!name){ $("#toTrkMsg").innerHTML='<div class="sub" style="color:var(--red);margin-top:8px">Ponle el nombre con el que lo subiste al Drive.</div>'; return; }
+    sendToTracker(name, a._folder, $("#toTrkDrive").value.trim());
+    $("#toTrkName").value=""; $("#toTrkDrive").value="";
+    switchView("tracker");
+  });
+}
+
+function selectMode(mode){
+  selectedMode=mode;
+  document.querySelectorAll(".mode").forEach(m=>m.classList.toggle("sel",m.dataset.mode===mode));
+  const p=$("#modePanel");
+  if(mode==="format"){
+    p.innerHTML=`<div class="panel">
+      <div class="small-label">Elige un formato</div>
+      <div class="chips" id="chips">${Object.keys(FORMATS).map(f=>`<div class="chip" data-f="${escAttr(f)}">${escHtml(f)}</div>`).join("")}</div>
+      <div class="small-label">…o escribe el que quieras</div>
+      <input class="freein" id="freeFmt" placeholder="ej: estilo anime, stop-motion, reaction, lo que esté pegando…" />
+      <button class="btn" id="genBtn">Generar variación de formato →</button>
+    </div>`;
+    p.querySelectorAll(".chip").forEach(ch=>ch.addEventListener("click",()=>{
+      selectedFormat=ch.dataset.f; $("#freeFmt").value="";
+      p.querySelectorAll(".chip").forEach(x=>x.classList.toggle("sel",x===ch));
+    }));
+    $("#freeFmt").addEventListener("input",()=>{ selectedFormat=null; p.querySelectorAll(".chip").forEach(x=>x.classList.remove("sel")); });
+    $("#genBtn").addEventListener("click",()=>produce("format"));
+  } else {
+    const def = mode==="hook"?5:3;
+    const noun = mode==="hook"?"hooks":"versiones de cuerpo";
+    p.innerHTML=`<div class="panel">
+      <div class="numrow"><span class="small-label" style="margin:0">¿Cuántas variantes?</span><input id="numVar" type="number" min="1" max="8" value="${def}" /></div>
+      <button class="btn" id="genBtn">Generar ${noun} →</button>
+    </div>`;
+    $("#genBtn").addEventListener("click",()=>produce(mode));
+  }
+}
+
+// ---------- produce ----------
+async function produce(mode){
+  const key=keyInput.value.trim();
+  if(!key){ $("#cfg").classList.add("open"); genStatus("","Pega tu clave de Gemini arriba."); return; }
+  const a=current;
+  let prompt, title, badge;
+  if(mode==="format"){
+    const free=$("#freeFmt")?.value.trim();
+    const fmt = selectedFormat || free;
+    if(!fmt){ genStatus("","Elige un formato o escribe uno."); return; }
+    const recipe = FORMATS[fmt] || ("Formato indicado por el editor: "+fmt+". Descríbelo con claridad para que el editor sepa cómo se ve. Vertical 9:16.");
+    title="Formato: "+fmt; badge="cambiar formato";
+    prompt=`A partir de este winner ya validado, MANTÉN intactos el guion, el audio/locución, la estructura y la oferta. Cambia SOLO el formato visual a: "${fmt}".
+CÓMO ES ESE FORMATO: ${recipe}
+
+WINNER (JSON):
+${JSON.stringify(a)}
+
+Escribe el BRIEF para el editor, en ESPAÑOL, formato VERTICAL 9:16. Entrega:
+### Qué vamos a hacer
+1-2 líneas: qué mantenemos (mismo audio, guion y oferta) y a qué formato lo pasamos.
+### Cómo se ve este formato
+Describe el estilo "${fmt}" para que el editor lo visualice (set/personajes, cámara, tono, ritmo) — siempre vertical 9:16.
+### Escena por escena
+Para cada bloque del guion: copia la MISMA locución en español, y al lado dile al editor qué debe verse ahora en este formato, qué texto va en pantalla, y con qué herramienta producirlo (VEO3 / Nano Banana / grabación real). NO escribas prompts: solo la indicación de qué lograr.
+### Música
+Mood/tipo de track a buscar en Epidemic.
+### Qué cuidar
+3-4 puntos (mantener subtítulos grandes, no perder la promesa, vertical, etc.).`;
+  } else if(mode==="hook"){
+    const n=Math.min(8,Math.max(1,+$("#numVar").value||5));
+    title=`${n} hooks nuevos`; badge="variar hook";
+    prompt=`De este winner, MANTÉN el cuerpo, la oferta y el formato. Propón ${n} HOOKS nuevos (0-3s) distintos entre sí para testear, mismo producto y promesa. Todo en ESPAÑOL, vertical 9:16.
+WINNER (JSON):
+${JSON.stringify(a)}
+Escribe un BRIEF para el editor. Para CADA hook:
+### Hook N — <ángulo en pocas palabras>
+- **Texto en pantalla:** <español>
+- **Locución:** <español>
+- **Qué se ve:** <descripción de la escena para que el editor la produzca>
+- **Cómo producirlo:** <grabación real / VEO3 / Nano Banana — solo la indicación, sin prompt>`;
+  } else {
+    const n=Math.min(8,Math.max(1,+$("#numVar").value||3));
+    title=`${n} variantes de cuerpo`; badge="variar cuerpo";
+    prompt=`De este winner, MANTÉN el hook ganador y la oferta. Propón ${n} variantes del CUERPO (desarrollo) con ángulos/demostraciones distintos, mismo producto y promesa. Todo en ESPAÑOL, vertical 9:16.
+WINNER (JSON):
+${JSON.stringify(a)}
+Escribe un BRIEF para el editor. Para CADA variante:
+### Variante N — <ángulo>
+- **Estructura:** <cómo se desarrolla>
+- **Guion del cuerpo:** locución (español) + qué se ve, momento por momento.
+- **Cómo producirlo:** indicación de herramienta (grabación real / VEO3 / Nano Banana), sin prompt.`;
+  }
+
+  const card=addResultCard(title,badge);
+  genStatus("Generando…");
+  try{
+    const data = await gen([{text:prompt}], key, {temperature:0.9, maxOutputTokens:4096}, PROD_SYS);
+    const md=(data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("")||"(sin respuesta)";
+    card.querySelector(".rb").innerHTML = renderMd(md);
+    bindCopy(card);
+    genStatus("");
+  }catch(e){ card.querySelector(".rb").innerHTML=`<div class="err">${errMsg(e)}</div>`; genStatus(""); }
+}
+
+function addResultCard(title,badge){
+  const d=document.createElement("div"); d.className="result";
+  d.innerHTML=`<div class="rh"><div class="rt">${escHtml(title)}<span>${escHtml(badge)}</span></div><div class="mono" style="color:var(--faint);font-size:11px">▾</div></div>
+    <div class="rb"><span class="status"><span class="spin"></span>Generando…</span></div>`;
+  d.querySelector(".rh").addEventListener("click",()=>d.classList.toggle("collapsed"));
+  $("#results").prepend(d);
+  return d;
+}
+
+// ---------- Gemini calls ----------
+async function gen(parts, key, cfg={}, sys, tools){
+  const body={ contents:[{parts}], generationConfig:Object.assign({temperature:0.6,maxOutputTokens:4096},cfg) };
+  if(sys) body.system_instruction={parts:[{text:sys}]};
+  if(tools) body.tools=tools;
+  const res=await fetch(`${API}/v1beta/models/${$("#model").value}:generateContent`,{
+    method:"POST",headers:{"x-goog-api-key":key,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!res.ok) throw await errOf(res);
+  return res.json();
+}
+async function uploadVideo(file,key){
+  const start=await fetch(`${API}/upload/v1beta/files`,{method:"POST",
+    headers:{"x-goog-api-key":key,"X-Goog-Upload-Protocol":"resumable","X-Goog-Upload-Command":"start",
+      "X-Goog-Upload-Header-Content-Length":String(file.size),"X-Goog-Upload-Header-Content-Type":file.type,"Content-Type":"application/json"},
+    body:JSON.stringify({file:{display_name:file.name}})});
+  if(!start.ok) throw await errOf(start);
+  const u=start.headers.get("X-Goog-Upload-URL")||start.headers.get("x-goog-upload-url");
+  if(!u) throw {code:"cors"};
+  const up=await fetch(u,{method:"POST",headers:{"Content-Length":String(file.size),"X-Goog-Upload-Offset":"0","X-Goog-Upload-Command":"upload, finalize"},body:file});
+  if(!up.ok) throw await errOf(up);
+  return (await up.json()).file;
+}
+async function waitActive(name,key){
+  for(let i=0;i<40;i++){
+    const r=await fetch(`${API}/v1beta/${name}`,{headers:{"x-goog-api-key":key}});
+    if(!r.ok) throw await errOf(r);
+    const f=await r.json();
+    if(f.state==="ACTIVE") return f;
+    if(f.state==="FAILED") throw {code:"video",msg:"Gemini no pudo procesar el video. Prueba con un mp4."};
+    await sleep(2500);
+  }
+  throw {code:"video",msg:"El video tardó demasiado. Usa uno más corto o reintenta."};
+}
+
+// ---------- helpers ----------
+function stripJSON(t){ t=(t||"").trim().replace(/^```json/i,"").replace(/^```/,"").replace(/```$/,"").trim();
+  const a=t.indexOf("{"),b=t.lastIndexOf("}"); return (a>=0&&b>=0)?t.slice(a,b+1):t; }
+async function errOf(res){ let b=""; try{b=JSON.stringify(await res.json());}catch(e){} return {code:res.status,msg:b}; }
+function errMsg(e){
+  const s=(e.code||"")+" "+(e.msg||e.message||"");
+  if(/API_KEY_INVALID|API key not valid/.test(s)||(/400/.test(s)&&/key/i.test(s))) return "Tu clave no es válida. Revísala en aistudio.google.com/apikey.";
+  if(/403|PERMISSION_DENIED|billing|FAILED_PRECONDITION/.test(s)) return "Ese modelo pide facturación. Cambia a <b>Gemini 3.1 Flash-Lite</b> (gratis) en el botón Clave.";
+  if(/429|RESOURCE_EXHAUSTED|quota/.test(s)) return "Límite gratis alcanzado. Espera un momento y reintenta.";
+  if(e.code==="cors"||/Failed to fetch|NetworkError/.test(s)) return "No se pudo conectar. Si abriste el archivo con doble clic, súbelo a un hosting gratis (Netlify Drop) y ábrelo desde ahí.";
+  if(e.code==="video") return e.msg;
+  return "Algo falló: "+(e.msg||e.message||"error");
+}
+function setStatus(t,err){ const el=$("#status"); if(!el)return; el.innerHTML=err?`<div class="err">${err}</div>`:(t?`<span class="spin"></span>${t}`:""); el.className=err?"":"status"; }
+function genStatus(t,err){ const el=$("#genStatus"); if(!el)return; el.innerHTML=err?`<div class="err">${err}</div>`:(t?`<span class="spin"></span>${t}`:""); el.className=err?"":"status"; }
+
+// markdown
+function escHtml(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function escAttr(s){return escHtml(s).replace(/"/g,"&quot;");}
+function renderMd(text){
+  const parts=String(text).split(/```/); let html="";
+  parts.forEach((chunk,i)=>{
+    if(i%2===1){ const code=escHtml(chunk.replace(/^[a-z]*\n/i,"").replace(/^\n/,"").replace(/\n$/,""));
+      html+=`<div class="codeblock"><button class="cp">Copiar</button>${code}</div>`; }
+    else html+=inlineMd(chunk);
+  });
+  return html;
+}
+function inlineMd(t){
+  const lines=t.split("\n"); let out="",inList=false;
+  const flush=()=>{if(inList){out+="</ul>";inList=false;}};
+  for(const line of lines){
+    if(/^\s*###\s+/.test(line)){flush();out+=`<h3>${fmtInline(line.replace(/^\s*###\s+/,""))}</h3>`;continue;}
+    if(/^\s*##\s+/.test(line)){flush();out+=`<h3>${fmtInline(line.replace(/^\s*##\s+/,""))}</h3>`;continue;}
+    if(/^\s*[-*]\s+/.test(line)){if(!inList){out+="<ul>";inList=true;}out+=`<li>${fmtInline(line.replace(/^\s*[-*]\s+/,""))}</li>`;continue;}
+    flush(); if(line.trim()==="")continue; out+=`<p>${fmtInline(line)}</p>`;
+  }
+  flush(); return out;
+}
+function fmtInline(s){return escHtml(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");}
+function bindCopy(scope){
+  scope.querySelectorAll(".cp").forEach(b=>b.addEventListener("click",()=>{
+    navigator.clipboard.writeText(b.parentElement.textContent.replace(/^Copiar/,"").trim());
+    b.textContent="Copiado ✓"; setTimeout(()=>b.textContent="Copiar",1300);
+  }));
+}
+
+// ---------- TRACKER (analizador de variantes, por días) ----------
+let addingDayTo = null;   // videoId donde se muestra el form de día
+let editingDay = null;    // {vid, dayId}
+let editingVid = null;    // videoId en modo Pre-subir (editar datos)
+let testingVid = null;    // videoId con panel TESTEAR abierto
+let openTrkFolders = {};  // colapso de carpetas en el Tracker
+
+const DAY_FIELDS = [
+  {k:"date", label:"Día / fecha", type:"date"},
+  {k:"platform", label:"Plataforma", type:"select", opts:["Meta","TikTok","Ambas"]},
+  {k:"spend", label:"Gasto (S/)", type:"number"},
+  {k:"conv", label:"Conversiones", type:"number"},
+  {k:"cpa", label:"CPA (S/)", type:"number"},
+  {k:"cpm", label:"CPM (S/)", type:"number"},
+  {k:"cpc", label:"CPC (S/)", type:"number"},
+  {k:"ctr", label:"CTR (%)", type:"number"},
+  {k:"hook", label:"Hook 3s (%)", type:"number"},
+];
+
+function switchView(v){
+  const studio = v==="studio";
+  $("#viewStudio").classList.toggle("hidden", !studio);
+  $("#viewTracker").classList.toggle("hidden", studio);
+  $("#tabStudio").classList.toggle("active", studio);
+  $("#tabTracker").classList.toggle("active", !studio);
+  if(!studio) renderTracker();
+}
+$("#tabStudio").addEventListener("click", ()=>switchView("studio"));
+$("#tabTracker").addEventListener("click", ()=>switchView("tracker"));
+
+function dayVerdict(d){ const p=evalPerf(d); if(!p.anyData) return {cls:"na",txt:"—"}; return p.isWinner?{cls:"win",txt:"Winner"}:{cls:"lose",txt:"No"}; }
+function videoBest(v){
+  const withCpa=(v.days||[]).filter(d=>d.cpa&&!isNaN(parseFloat(d.cpa)));
+  if(!withCpa.length) return null;
+  return withCpa.reduce((a,b)=>parseFloat(b.cpa)<parseFloat(a.cpa)?b:a);
+}
+function videoIsWinner(v){ return (v.days||[]).some(d=>{const p=evalPerf(d);return p.anyData&&p.isWinner;}); }
+function videoStatus(v){
+  if(!(v.days&&v.days.length)) return {cls:"up",txt:"📤 Subido"};
+  if(videoIsWinner(v)) return {cls:"win",txt:"Winner"};
+  return {cls:"lose",txt:"No winner"};
+}
+function fldName(id){ const f=folders.find(x=>x.id===id); return f?f.name:""; }
+
+function renderTracker(){
+  const total = tracker.length;
+  const subidos = tracker.filter(v=>!(v.days&&v.days.length)).length;
+  const winners = tracker.filter(videoIsWinner);
+  const folderOpts = `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}">${escHtml(f.name)}</option>`).join("");
+
+  // DASHBOARD — mejores videos winners del editor, por mejor CPA
+  const ranked = winners.map(v=>({v, best:videoBest(v)})).filter(x=>x.best)
+    .sort((a,b)=>parseFloat(a.best.cpa)-parseFloat(b.best.cpa));
+  const dash = ranked.length ? ranked.slice(0,5).map((x,i)=>`
+    <div class="dash-row">
+      <div class="dash-rank">${i+1}</div>
+      <div class="dash-name">${escHtml(x.v.video)}${x.v.folder?`<span style="color:var(--faint);font-weight:400;font-size:11px"> · ${escHtml(fldName(x.v.folder))}</span>`:""}</div>
+      <div class="dash-cpa">mejor CPA S/${escHtml(x.best.cpa)}</div>
+    </div>`).join("")
+    : `<div class="libempty" style="padding:18px">Aún no hay videos winners. Aparecerán acá cuando un día cumpla todos los umbrales.</div>`;
+
+  // AGRUPAR por carpeta de producto (colapsable), ordenado por fecha (reciente primero)
+  const byDate = arr => arr.slice().sort((a,b)=> a.id<b.id?1:(a.id>b.id?-1:0));
+  const group = (label, vids, fid) => {
+    const open = openTrkFolders[fid]!==false;
+    const items = byDate(vids).map(videoCardHtml).join("") || '<div class="libempty" style="padding:14px 4px">Vacío</div>';
+    return `<div class="folder">
+      <div class="fhead" data-trkfold="${fid}">
+        <span class="fcaret">${open?'▾':'▸'}</span>
+        <span class="fname">${escHtml(label)}</span>
+        <span class="fcount">${vids.length}</span>
+      </div>
+      ${open?`<div class="fitems">${items}</div>`:''}
+    </div>`;
+  };
+  let groups="";
+  folders.forEach(f=>{ const vids=tracker.filter(v=>v.folder===f.id); if(vids.length) groups+=group(f.name, vids, f.id); });
+  const loose=tracker.filter(v=>!v.folder || !folders.find(f=>f.id===v.folder));
+  if(loose.length) groups+=group("Sin carpeta", loose, "__none");
+  if(!tracker.length) groups=`<div class="libempty" style="padding:24px">Aún no hay videos. Regístralos desde el Estudio (botón "Mandar al Tracker") o agrégalos aquí abajo.</div>`;
+
+  $("#viewTracker").innerHTML = `
+    <div class="label">Dashboard · mejores videos del editor</div>
+    <div class="trkhead">
+      <div class="trkstats">
+        <div class="tstat"><div class="n">${total}</div><div class="l">Videos</div></div>
+        <div class="tstat"><div class="n" style="color:var(--gold)">${subidos}</div><div class="l">Subidos</div></div>
+        <div class="tstat"><div class="n" style="color:var(--green)">${winners.length}</div><div class="l">Winners</div></div>
+      </div>
+    </div>
+    <div class="trkpanel" style="padding:6px 0">${dash}</div>
+
+    <div class="trkpanel">
+      <div class="label">Registrar un video nuevo</div>
+      <div class="trkgrid">
+        <div class="full"><div class="small-label">Nombre (como lo subió el editor al Drive)</div>
+          <input class="freein" id="nv_name" placeholder="PRODUCTO 13/07 - VID 1" /></div>
+        <div class="full"><div class="small-label">Link del video en Drive (opcional)</div>
+          <input class="freein" id="nv_drive" placeholder="https://drive.google.com/…" /></div>
+        <div class="full"><div class="small-label">Carpeta / producto</div>
+          <select class="freein" id="nv_folder">${folderOpts}</select></div>
+      </div>
+      <button class="btn" id="nvSave" style="margin-top:14px">+ Agregar video</button>
+    </div>
+
+    <div class="label">Videos por producto</div>
+    ${groups}`;
+
+  // bind add-video
+  $("#nvSave").addEventListener("click", ()=>{
+    const name=$("#nv_name").value.trim(); if(!name){ alert("Ponle el nombre del video."); return; }
+    const fid=$("#nv_folder").value;
+    tracker.unshift({ id:"t"+Date.now(), video:name, drive:$("#nv_drive").value.trim(), folder:fid, days:[] });
+    if(fid) openTrkFolders[fid]=true;
+    saveLib(); renderTracker();
+  });
+  // colapso de carpetas
+  $("#viewTracker").querySelectorAll("[data-trkfold]").forEach(h=>h.addEventListener("click",()=>{
+    const id=h.dataset.trkfold; openTrkFolders[id]=openTrkFolders[id]===false?true:false; renderTracker();
+  }));
+  // Pre-subir (editar datos) / TESTEAR (panel de días)
+  $("#viewTracker").querySelectorAll("[data-presub]").forEach(b=>b.addEventListener("click",()=>{
+    editingVid = editingVid===b.dataset.presub?null:b.dataset.presub; testingVid=null; renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-testear]").forEach(b=>b.addEventListener("click",()=>{
+    testingVid = testingVid===b.dataset.testear?null:b.dataset.testear; editingVid=null; addingDayTo=null; editingDay=null; renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-savevid]").forEach(b=>b.addEventListener("click",()=>{
+    const v=tracker.find(x=>x.id===b.dataset.savevid); if(!v) return;
+    v.video=$("#ev_name").value.trim()||v.video; v.drive=$("#ev_drive").value.trim(); v.folder=$("#ev_folder").value;
+    editingVid=null; saveLib(); renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-cancelvid]").forEach(b=>b.addEventListener("click",()=>{ editingVid=null; renderTracker(); }));
+  // day form
+  if($("#daySave")) $("#daySave").addEventListener("click", e=>saveDay(e.target.dataset.vid));
+  if($("#dayCancel")) $("#dayCancel").addEventListener("click", ()=>{ addingDayTo=null; editingDay=null; renderTracker(); });
+  $("#viewTracker").querySelectorAll("[data-addday]").forEach(b=>b.addEventListener("click",()=>{ editingDay=null; addingDayTo=b.dataset.addday; renderTracker(); }));
+  $("#viewTracker").querySelectorAll("[data-editday]").forEach(b=>b.addEventListener("click",()=>{ addingDayTo=null; editingDay={vid:b.dataset.vid, dayId:b.dataset.editday}; renderTracker(); }));
+  $("#viewTracker").querySelectorAll("[data-delday]").forEach(b=>b.addEventListener("click",()=>{
+    const v=tracker.find(x=>x.id===b.dataset.vid); if(v){ v.days=v.days.filter(d=>d.id!==b.dataset.delday); saveLib(); renderTracker(); }
+  }));
+  $("#viewTracker").querySelectorAll("[data-delvid]").forEach(b=>b.addEventListener("click",()=>{
+    if(!confirm("¿Eliminar este video y todo su historial?")) return;
+    tracker=tracker.filter(x=>x.id!==b.dataset.delvid); saveLib(); renderTracker();
+  }));
+}
+
+function videoCardHtml(v){
+  const st=videoStatus(v);
+  const testing = testingVid===v.id;
+  const editing = editingVid===v.id;
+  const folderOpts = `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}" ${v.folder===f.id?'selected':''}>${escHtml(f.name)}</option>`).join("");
+
+  // panel pre-subir (datos básicos)
+  const editPanel = editing ? `<div class="dayform">
+      <div class="small-label">Nombre del video</div>
+      <input class="freein" id="ev_name" value="${escAttr(v.video)}" />
+      <div class="small-label" style="margin-top:8px">Link de la carpeta en Drive</div>
+      <input class="freein" id="ev_drive" value="${escAttr(v.drive||'')}" placeholder="https://drive.google.com/…" />
+      <div class="small-label" style="margin-top:8px">Carpeta / producto</div>
+      <select class="freein" id="ev_folder">${folderOpts}</select>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn" data-savevid="${v.id}" style="margin-top:0">Guardar datos</button>
+        <button class="clear" data-cancelvid="1" style="padding:0 16px">Cancelar</button>
+      </div></div>` : '';
+
+  // panel testeo (días)
+  let testPanel='';
+  if(testing){
+    const dayRows = (v.days&&v.days.length) ? v.days.map(d=>{
+      const dv=dayVerdict(d);
+      return `<tr>
+        <td>${escHtml(d.date||"—")}</td><td>${escHtml(d.platform||"—")}</td>
+        <td>${d.spend?("S/"+escHtml(d.spend)):"—"}</td><td>${escHtml(d.conv||"—")}</td>
+        <td>${d.cpa?("S/"+escHtml(d.cpa)):"—"}</td><td>${d.cpm?("S/"+escHtml(d.cpm)):"—"}</td>
+        <td>${d.cpc?("S/"+escHtml(d.cpc)):"—"}</td><td>${d.ctr?(escHtml(d.ctr)+"%"):"—"}</td>
+        <td>${d.hook?(escHtml(d.hook)+"%"):"—"}</td>
+        <td><span class="vbadge ${dv.cls}">${dv.txt}</span></td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="trkact" data-editday="${d.id}" data-vid="${v.id}">✎</button>
+          <button class="trkact d" data-delday="${d.id}" data-vid="${v.id}">×</button></td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="11" style="text-align:center;color:var(--faint);padding:14px">Sin días aún. Agrega el primer día de testeo abajo.</td></tr>`;
+
+    const showForm = (addingDayTo===v.id) || (editingDay&&editingDay.vid===v.id);
+    const ed = editingDay&&editingDay.vid===v.id ? (v.days.find(d=>d.id===editingDay.dayId)||{}) : {};
+    const dayForm = showForm ? `<div class="dayform">
+      <div class="trkgrid">${DAY_FIELDS.map(f=>{
+        const val=ed[f.k]||"";
+        const inp = f.type==="select"
+          ? `<select class="freein" id="day_${f.k}">${f.opts.map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join("")}</select>`
+          : `<input class="freein" id="day_${f.k}" type="${f.type}" value="${escAttr(val)}" ${f.type==='number'?'inputmode="decimal"':''} />`;
+        return `<div><div class="small-label">${escHtml(f.label)}</div>${inp}</div>`;
+      }).join("")}</div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn" id="daySave" data-vid="${v.id}" style="margin-top:0">${editingDay&&editingDay.vid===v.id?'Guardar día':'+ Guardar día'}</button>
+        <button class="clear" id="dayCancel" style="padding:0 16px">Cancelar</button>
+      </div></div>` : `<button class="miniaddbtn" data-addday="${v.id}">+ Agregar día de testeo</button>`;
+
+    testPanel = `<div class="trkwrap"><table class="trk">
+        <thead><tr><th>Día</th><th>Plat.</th><th>Gasto</th><th>Conv.</th><th>CPA</th><th>CPM</th><th>CPC</th><th>CTR</th><th>Hook</th><th>Veredicto</th><th></th></tr></thead>
+        <tbody>${dayRows}</tbody>
+      </table></div>${dayForm}`;
+  }
+
+  return `<div class="vidcard">
+    <div class="vidcard-head">
+      <div class="vn">${v.drive?`<a href="${escAttr(v.drive)}" target="_blank" rel="noopener" title="Abrir en Drive">${escHtml(v.video)} ↗</a>`:escHtml(v.video)}</div>
+      <span class="vbadge ${st.cls}">${st.txt}</span>
+      <button class="trkact d" data-delvid="${v.id}" title="Eliminar video">×</button>
+    </div>
+    <div class="vidcard-body">
+      <div class="vidbtns">
+        <button class="vbtn ${editing?'on':''}" data-presub="${v.id}">Pre-subir</button>
+        <button class="vbtn test ${testing?'on':''}" data-testear="${v.id}">TESTEAR</button>
+      </div>
+      ${editPanel}
+      ${testPanel}
+    </div>
+  </div>`;
+}
+
+function saveDay(vid){
+  const v=tracker.find(x=>x.id===vid); if(!v) return;
+  const V = k => ($("#day_"+k)?.value||"").trim();
+  const data={}; DAY_FIELDS.forEach(f=>data[f.k]=V(f.k));
+  if(!Object.values(data).some(x=>x)){ alert("Llena al menos un dato del día."); return; }
+  if(!v.days) v.days=[];
+  if(editingDay&&editingDay.vid===vid){ const d=v.days.find(x=>x.id===editingDay.dayId); if(d) Object.assign(d,data); editingDay=null; }
+  else { data.id="d"+Date.now(); v.days.push(data); }
+  addingDayTo=null; saveLib(); renderTracker();
+}
+
+// permite registrar un video desde el Estudio
+function sendToTracker(name, folder, drive){
+  tracker.unshift({ id:"t"+Date.now(), video:name, drive:drive||"", folder:folder||"", days:[] });
+  if(folder) openTrkFolders[folder]=true;
+  saveLib();
+}
+
+// ---------- init ----------
+loadLib();
+if(!keyInput.value) $("#cfg").classList.add("open");
+renderLib();
+if(lib.length){ current=lib[0]; renderWinner(); renderLib(); } else { showIngesta(); }
+</script>
+</body>
+</html>
