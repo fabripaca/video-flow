@@ -13,7 +13,15 @@
     --green:#3ddc84; --yellow:#f5c542; --red:#ff5c6a;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;position:relative}
+  body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      radial-gradient(900px 500px at 88% -8%, rgba(230,32,46,.16), transparent 60%),
+      radial-gradient(800px 520px at -8% 12%, rgba(230,32,46,.10), transparent 55%),
+      radial-gradient(700px 600px at 50% 115%, rgba(230,32,46,.08), transparent 60%),
+      var(--bg);}
+  body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+    background-image:repeating-linear-gradient(120deg, transparent 0, transparent 58px, rgba(230,32,46,.06) 58px, rgba(230,32,46,.06) 60px, transparent 60px, transparent 118px, rgba(255,90,100,.05) 118px, rgba(255,90,100,.05) 119px);}
   .mono{font-family:'JetBrains Mono',monospace}
   .wrap{max-width:1180px;margin:0 auto;padding:24px 18px 70px}
   a{color:var(--gold);text-decoration:none} a:hover{text-decoration:underline}
@@ -50,9 +58,9 @@
   .libitem .del{position:absolute;top:7px;right:7px;color:var(--faint);font-size:13px;line-height:1;background:none;border:none;cursor:pointer}
   .libitem .del:hover{color:var(--red)}
   .libempty{font-size:12px;color:var(--faint);text-align:center;padding:14px 4px;line-height:1.6}
-  .sidebtns{display:flex;gap:8px;margin-bottom:12px}
+  .sidebtns{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
   .sidebtns .newbtn{margin-bottom:0}
-  .foldbtn{flex-shrink:0;width:42px;background:var(--surface2);color:var(--gold);border:1px solid var(--border);border-radius:10px;font-size:18px;cursor:pointer}
+  .foldbtn{flex-shrink:0;background:var(--surface2);color:var(--gold);border:1px solid var(--border);border-radius:10px;font-size:12px;font-family:'Saira';font-weight:600;padding:0 14px;cursor:pointer;white-space:nowrap}
   .foldbtn:hover{border-color:var(--gold)}
   .folder{margin-bottom:6px}
   .fhead{display:flex;align-items:center;gap:6px;padding:7px 8px;border-radius:9px;cursor:pointer;transition:.12s}
@@ -106,6 +114,18 @@
   .layer .ln{font-family:'JetBrains Mono';font-size:11px;color:var(--gold);width:120px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
   .layer .lv{font-size:13.5px;color:var(--ink);line-height:1.55}
   .layer .lv .small{color:var(--muted);font-size:12.5px}
+  /* capas en 2 columnas con calificación */
+  .layer2{display:grid;grid-template-columns:1fr 92px;gap:14px;align-items:start;padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);margin-bottom:10px}
+  .l2-name{font-family:'JetBrains Mono';font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+  .l2-text{font-size:13.5px;color:var(--ink);line-height:1.55}
+  .l2-text .small{color:var(--muted);font-size:12.5px}
+  .l2-rate{text-align:center;padding-top:18px}
+  .ratebadge{display:inline-block;font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.04em;padding:5px 0;width:100%;border-radius:8px;text-transform:uppercase}
+  .ratebadge.alto{color:var(--green);background:rgba(61,220,132,.12);border:1px solid rgba(61,220,132,.3)}
+  .ratebadge.medio{color:var(--yellow);background:rgba(245,197,66,.12);border:1px solid rgba(245,197,66,.3)}
+  .ratebadge.bajo{color:var(--red);background:rgba(255,92,106,.12);border:1px solid rgba(255,92,106,.3)}
+  .ratebadge.na{color:var(--faint);background:var(--surface)}
+  .ratelabel{font-family:'JetBrains Mono';font-size:8px;color:var(--faint);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
 
   /* fabrica */
   .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px}
@@ -180,6 +200,13 @@
   .dayform{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:12px}
   .miniaddbtn{background:none;border:1px dashed var(--border);color:var(--muted);border-radius:9px;padding:8px 14px;font-family:'JetBrains Mono';font-size:11px;cursor:pointer;margin-top:10px}
   .miniaddbtn:hover{border-color:var(--gold);color:var(--gold)}
+  .vidbtns{display:flex;gap:10px}
+  .vbtn{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--ink);font-family:'Saira';font-weight:600;font-size:13px;padding:10px;border-radius:10px;cursor:pointer;transition:.13s}
+  .vbtn:hover{border-color:var(--gold)}
+  .vbtn.on{border-color:var(--gold);color:var(--gold)}
+  .vbtn.test{background:var(--gold);color:#fff;border-color:var(--gold)}
+  .vbtn.test:hover{background:#ff3b46}
+  .vbtn.test.on{background:#ff3b46}
   .dash-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--border)}
   .dash-row:last-child{border:none}
   .dash-rank{font-family:'Saira';font-weight:700;font-size:18px;color:var(--gold);width:26px;text-align:center}
@@ -220,8 +247,8 @@
     <aside class="side">
       <h2>Biblioteca</h2>
       <div class="sidebtns">
-        <button class="newbtn" id="newBtn">+ Nuevo winner</button>
-        <button class="foldbtn" id="newFolderBtn" title="Nueva carpeta">+</button>
+        <button class="newbtn" id="newBtn">+ Nuevo Video</button>
+        <button class="foldbtn" id="newFolderBtn" title="Crear carpeta">Crear Carpeta</button>
       </div>
       <div id="library"></div>
     </aside>
@@ -243,7 +270,7 @@ const KPI = [
   {key:"cpm",  label:"CPM",     max:30,  fmt:v=>"S/"+v, rule:"≤ S/30"},
   {key:"cpc",  label:"CPC",     max:0.90,fmt:v=>"S/"+v, rule:"≤ S/0.90"},
   {key:"ctr",  label:"CTR",     min:2,   fmt:v=>v+"%",  rule:"≥ 2%"},
-  {key:"hook", label:"Hook 3s", min:70,  fmt:v=>v+"%",  rule:"≥ 70%"},
+  {key:"hook", label:"Hook 3s", min:60,  fmt:v=>v+"%",  rule:"≥ 60%"},
   {key:"cpa",  label:"CPA",     max:15,  fmt:v=>"S/"+v, rule:"≤ S/15"},
 ];
 function evalPerf(m){
@@ -366,7 +393,7 @@ function renderLib(){
 
 // ----- folder actions -----
 function newFolder(){
-  const name=prompt("Nombre de la carpeta (ej: ZANARA, Enzimas, Por testear):");
+  const name=prompt("Nombre del producto (ej: Lámpara, Tazas, Luces):");
   if(!name||!name.trim()) return;
   folders.unshift({id:"f"+Date.now(), name:name.trim(), drive:""});
   saveLib(); renderLib();
@@ -480,23 +507,25 @@ async function analyzeWinner(){
     setStatus("Procesando el video…");
     const ready = await waitActive(f.name,key);
     setStatus(store?"Leyendo tu tienda y despiezando el winner…":"Despiezando el winner…");
-    const prompt = `Analiza este video de anuncio (Meta Ads, e-commerce COD LatAm) y DESPIÉZALO en capas para poder replicarlo.
-${ctx?"Contexto del equipo: "+ctx+"\n":""}${store?"LANDING/TIENDA: lee la página en "+store+" y evalúa la CONCORDANCIA de mensaje entre el video y la landing (mismo claim, misma promesa, mismo público, mismo tono). Señala fugas.\n":""}${mets?"MÉTRICAS DE META reportadas: "+mets+".\nUMBRALES DEL NEGOCIO (Perú, soles): CTR sano ≥2% (menos = MALO) · CPC ≤ S/0.90 · CPM ≤ S/30 · CPA ≤ S/15 · Hook 3s ≥70% (menos = el hook tiene mucho por mejorar). Una métrica fuera de su umbral es MALA — NO la trates como saludable.\nHaz un DIAGNÓSTICO DE EMBUDO: Hook 3s por debajo de 70% => problema del VIDEO (hook). Hook ok pero CTR <2% => OFERTA/ÁNGULO/CTA. CTR ok pero CPA > S/15 => NO es el video, es post-clic (landing/oferta/precio/operación COD). CPM > S/30 => subasta/audiencia/cuenta. Concluye dónde está el problema y si conviene tocar el video.\n":""}
+    const prompt = `Analiza este video de anuncio (Meta Ads, e-commerce COD LatAm) y descompónlo en capas para poder replicarlo.
+${ctx?"Contexto del equipo: "+ctx+"\n":""}${store?"LANDING/TIENDA: lee la página en "+store+" y evalúa la CONCORDANCIA de mensaje entre el video y la landing (mismo claim, misma promesa, mismo público, mismo tono). Señala fugas.\n":""}${mets?"MÉTRICAS DE META reportadas: "+mets+".\nUMBRALES DEL NEGOCIO (Perú, soles): CTR sano ≥2% (menos = MALO) · CPC ≤ S/0.90 · CPM ≤ S/30 · CPA ≤ S/15 · Hook 3s ≥60% (menos = el hook tiene mucho por mejorar). Una métrica fuera de su umbral es MALA — NO la trates como saludable.\nHaz un DIAGNÓSTICO DE EMBUDO claro y directo, en lenguaje simple:\n- Hook 3s por debajo de 60% => el problema ES el VIDEO (el hook no retiene).\n- Hook ok pero CTR <2% => el problema es la OFERTA/ÁNGULO/CTA del video.\n- Si el video cumple las métricas de un video saludable (Hook ≥60%, CTR ≥2%) pero el CPA está caro (> S/15) => deja CLARÍSIMO que el problema NO es el video. El video está haciendo su trabajo (atrae y da clics). El problema está DESPUÉS del clic: en el ECOSISTEMA — la landing, la oferta/precio, la confirmación o la operación COD. Recomienda revisar la landing y el ecosistema, NO tocar el video.\n- CPM > S/30 => es la subasta/audiencia/cuenta, no la creatividad.\nEscribe la 'lectura' y la 'recomendacion' de forma que cualquiera lo entienda.\n":""}
+Para el scoreCreativo usa una escala REALISTA del 1 al 10 (1=malo, 5=promedio, 8-10=excelente). Sé honesto y crítico según lo que realmente ves; no infles la nota.
+Para cada capa (hook, cuerpo, oferta, formato) asigna un "nivel" de qué tan bien está LOGRADA en el video: "bajo", "medio" o "alto".
 Responde ÚNICAMENTE con JSON válido (sin markdown), en español, con este esquema EXACTO:
 {
  "nombre":"<nombre corto del producto/ángulo para la biblioteca>",
- "scoreCreativo":<0-100>,
+ "scoreCreativo":<1-10>,
  "veredicto":"<1-2 frases del porqué gana>",
  "porQueGana":"<2-4 frases>",
  "driver":"<qué capa carga el resultado>",
  "capas":{
-   "hook":{"textoEnPantalla":"<lo que aparece escrito 0-3s>","locucion":"<lo que se dice 0-3s>","visual":"<qué se ve>","porQueFunciona":"<...>"},
-   "cuerpo":{"resumen":"<estructura del desarrollo>","elementos":["<demostración, prueba, etc.>"]},
-   "oferta":{"oferta":"<la oferta>","cta":"<el llamado a la acción>"},
-   "formatoOriginal":"<UGC / estudio / animado / etc.>"
+   "hook":{"nivel":"bajo|medio|alto","textoEnPantalla":"<lo que aparece escrito 0-3s>","locucion":"<lo que se dice 0-3s>","visual":"<qué se ve>","porQueFunciona":"<...>"},
+   "cuerpo":{"nivel":"bajo|medio|alto","resumen":"<estructura del desarrollo>","elementos":["<demostración, prueba, etc.>"]},
+   "oferta":{"nivel":"bajo|medio|alto","oferta":"<la oferta>","cta":"<el llamado a la acción>"},
+   "formato":{"nivel":"bajo|medio|alto","formatoOriginal":"<UGC / estudio / animado / etc.>"}
  },
  "concordancia":${store?'{"nivel":"alta|media|baja","detalle":"<qué tan bien la landing continúa la promesa del video>","fugas":["<desajuste 1>"]}':'null'},
- "diagnosticoEmbudo":${mets?'{"esElVideo":"sí|parcial|no","lectura":"<qué dicen las métricas etapa por etapa>","recomendacion":"<tocar el video, o arreglar oferta/landing/operación>"}':'null'},
+ "diagnosticoEmbudo":${mets?'{"esElVideo":"sí|parcial|no","lectura":"<explica en lenguaje simple qué dicen las métricas y dónde está el problema>","recomendacion":"<tocar el video, o revisar landing/oferta/ecosistema/operación>"}':'null'},
  "guion":[{"bloque":"<Hook/Problema/Demo/Promesa/Cierre>","tiempo":"<0-3s>","locucion":"<lo que se dice>","visual":"<lo que se ve>","textoEnPantalla":"<subtítulo/texto>"}]
 }`;
     const parts=[{file_data:{mime_type:ready.mimeType,file_uri:ready.uri}},{text:prompt}];
@@ -515,9 +544,16 @@ Responde ÚNICAMENTE con JSON válido (sin markdown), en español, con este esqu
 }
 
 // ---------- render winner (despiece + fábrica) ----------
+function rateBadge(nivel){
+  const n=(nivel||"").toLowerCase();
+  if(n==="alto") return '<span class="ratebadge alto">Alto</span>';
+  if(n==="medio") return '<span class="ratebadge medio">Medio</span>';
+  if(n==="bajo") return '<span class="ratebadge bajo">Bajo</span>';
+  return '<span class="ratebadge na">—</span>';
+}
 function renderWinner(){
   const a=current;
-  const color = a.scoreCreativo>=70?"var(--green)":a.scoreCreativo>=45?"var(--yellow)":"var(--red)";
+  const color = a.scoreCreativo>=7?"var(--green)":a.scoreCreativo>=5?"var(--yellow)":"var(--red)";
   const c=a.capas||{};
   const guion=(a.guion||[]).map(g=>
     `<div class="layer"><div class="ln">${escHtml(g.bloque||"")}<br><span style="color:var(--faint)">${escHtml(g.tiempo||"")}</span></div>
@@ -547,7 +583,7 @@ function renderWinner(){
   }
   $("#main").innerHTML = `
     <div class="card">
-      <div class="label">Despiece · ${escHtml(a.nombre||"Winner")}</div>
+      <div class="label">${escHtml(a.nombre||"Winner")}</div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">
         <span class="small-label" style="margin:0">Carpeta:</span>
         <select class="freein" id="winFolder" style="width:auto;min-width:150px;padding:7px 10px">
@@ -566,10 +602,10 @@ function renderWinner(){
       <div class="why"><strong>Por qué gana (como pieza):</strong> ${escHtml(a.porQueGana||"")}${a.driver?`<br><span class="mono" style="color:var(--gold);font-size:11px">DRIVER: ${escHtml(a.driver)}</span>`:""}</div>
       ${diagHtml}
       <div class="label" style="margin-top:6px">Las 5 capas</div>
-      <div class="layer"><div class="ln">Hook</div><div class="lv">${escHtml(c.hook?.locucion||c.hook?.textoEnPantalla||"—")}<br><span class="small">${escHtml(c.hook?.visual||"")}</span></div></div>
-      <div class="layer"><div class="ln">Cuerpo</div><div class="lv">${escHtml(c.cuerpo?.resumen||"—")}</div></div>
-      <div class="layer"><div class="ln">Oferta / CTA</div><div class="lv">${escHtml(c.oferta?.oferta||"—")} <span class="small">· ${escHtml(c.oferta?.cta||"")}</span></div></div>
-      <div class="layer"><div class="ln">Formato</div><div class="lv">${escHtml(c.formatoOriginal||"—")}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Hook</div><div class="l2-text">${escHtml(c.hook?.locucion||c.hook?.textoEnPantalla||"—")}<br><span class="small">${escHtml(c.hook?.visual||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.hook?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Cuerpo</div><div class="l2-text">${escHtml(c.cuerpo?.resumen||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.cuerpo?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Oferta / CTA</div><div class="l2-text">${escHtml(c.oferta?.oferta||"—")} <span class="small">· ${escHtml(c.oferta?.cta||"")}</span></div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.oferta?.nivel)}</div></div>
+      <div class="layer2"><div class="l2-info"><div class="l2-name">Formato</div><div class="l2-text">${escHtml(c.formato?.formatoOriginal||c.formatoOriginal||"—")}</div></div><div class="l2-rate"><div class="ratelabel">Video</div>${rateBadge(c.formato?.nivel)}</div></div>
       ${concHtml}
       <div class="label" style="margin-top:16px">Guion (audio + visual)</div>
       ${guion||'<div class="sub">No se extrajo guion.</div>'}
@@ -588,8 +624,9 @@ function renderWinner(){
 
     <div class="card">
       <div class="label">📤 Mandar al Tracker</div>
-      <div class="sub">Cuando subas el video al Drive, escribe acá cómo lo nombraste y se crea solo en la página 3 (Tracker) para seguir sus resultados.</div>
-      <input class="freein" id="toTrkName" placeholder="ENZIMAS 13/06 - VID 1" />
+      <div class="sub">Cuando subas el video al Drive, escribe cómo lo nombraste y pega el link de su carpeta. Se crea solo en la página 3 (Tracker).</div>
+      <input class="freein" id="toTrkName" placeholder="PRODUCTO 13/07 - VID 1" />
+      <input class="freein" id="toTrkDrive" placeholder="Link de la carpeta en Drive (para abrirlo/descargarlo)" style="margin-top:8px" />
       <button class="btn" id="toTrkBtn">Mandar al Tracker →</button>
       <div id="toTrkMsg"></div>
     </div>
@@ -600,9 +637,9 @@ function renderWinner(){
   const ttb=$("#toTrkBtn"); if(ttb) ttb.addEventListener("click",()=>{
     const name=$("#toTrkName").value.trim();
     if(!name){ $("#toTrkMsg").innerHTML='<div class="sub" style="color:var(--red);margin-top:8px">Ponle el nombre con el que lo subiste al Drive.</div>'; return; }
-    sendToTracker(name, a._folder);
-    $("#toTrkName").value="";
-    $("#toTrkMsg").innerHTML='<div class="sub" style="color:var(--green);margin-top:8px">✓ Agregado al Tracker (página 3). Ahí le pones los días de testeo.</div>';
+    sendToTracker(name, a._folder, $("#toTrkDrive").value.trim());
+    $("#toTrkName").value=""; $("#toTrkDrive").value="";
+    switchView("tracker");
   });
 }
 
@@ -793,6 +830,9 @@ function bindCopy(scope){
 // ---------- TRACKER (analizador de variantes, por días) ----------
 let addingDayTo = null;   // videoId donde se muestra el form de día
 let editingDay = null;    // {vid, dayId}
+let editingVid = null;    // videoId en modo Pre-subir (editar datos)
+let testingVid = null;    // videoId con panel TESTEAR abierto
+let openTrkFolders = {};  // colapso de carpetas en el Tracker
 
 const DAY_FIELDS = [
   {k:"date", label:"Día / fecha", type:"date"},
@@ -848,55 +888,25 @@ function renderTracker(){
     </div>`).join("")
     : `<div class="libempty" style="padding:18px">Aún no hay videos winners. Aparecerán acá cuando un día cumpla todos los umbrales.</div>`;
 
-  // LISTA DE VIDEOS con sus días
-  const cards = tracker.length ? tracker.map(v=>{
-    const st=videoStatus(v);
-    const dayRows = (v.days&&v.days.length) ? v.days.map(d=>{
-      const dv=dayVerdict(d);
-      return `<tr>
-        <td>${escHtml(d.date||"—")}</td><td>${escHtml(d.platform||"—")}</td>
-        <td>${d.spend?("S/"+escHtml(d.spend)):"—"}</td><td>${escHtml(d.conv||"—")}</td>
-        <td>${d.cpa?("S/"+escHtml(d.cpa)):"—"}</td><td>${d.cpm?("S/"+escHtml(d.cpm)):"—"}</td>
-        <td>${d.cpc?("S/"+escHtml(d.cpc)):"—"}</td><td>${d.ctr?(escHtml(d.ctr)+"%"):"—"}</td>
-        <td>${d.hook?(escHtml(d.hook)+"%"):"—"}</td>
-        <td><span class="vbadge ${dv.cls}">${dv.txt}</span></td>
-        <td style="text-align:right;white-space:nowrap">
-          <button class="trkact" data-editday="${d.id}" data-vid="${v.id}">✎</button>
-          <button class="trkact d" data-delday="${d.id}" data-vid="${v.id}">×</button></td>
-      </tr>`;
-    }).join("") : `<tr><td colspan="11" style="text-align:center;color:var(--faint);padding:14px">Sin días registrados. Agrega el primer día de testeo abajo.</td></tr>`;
-
-    const showForm = (addingDayTo===v.id) || (editingDay&&editingDay.vid===v.id);
-    const ed = editingDay&&editingDay.vid===v.id ? (v.days.find(d=>d.id===editingDay.dayId)||{}) : {};
-    const dayForm = showForm ? `<div class="dayform">
-      <div class="trkgrid">${DAY_FIELDS.map(f=>{
-        const val=ed[f.k]||"";
-        const inp = f.type==="select"
-          ? `<select class="freein" id="day_${f.k}">${f.opts.map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join("")}</select>`
-          : `<input class="freein" id="day_${f.k}" type="${f.type}" value="${escAttr(val)}" ${f.type==='number'?'inputmode="decimal"':''} />`;
-        return `<div><div class="small-label">${escHtml(f.label)}</div>${inp}</div>`;
-      }).join("")}</div>
-      <div style="display:flex;gap:10px;margin-top:12px">
-        <button class="btn" id="daySave" data-vid="${v.id}" style="margin-top:0">${editingDay&&editingDay.vid===v.id?'Guardar día':'+ Guardar día'}</button>
-        <button class="clear" id="dayCancel" style="padding:0 16px">Cancelar</button>
-      </div></div>` : `<button class="miniaddbtn" data-addday="${v.id}">+ Agregar día de testeo</button>`;
-
-    return `<div class="vidcard">
-      <div class="vidcard-head">
-        <div class="vn">${v.drive?`<a href="${escAttr(v.drive)}" target="_blank" rel="noopener">${escHtml(v.video)}</a>`:escHtml(v.video)}</div>
-        ${v.folder?`<span class="fcount">${escHtml(fldName(v.folder))}</span>`:""}
-        <span class="vbadge ${st.cls}">${st.txt}</span>
-        <button class="trkact d" data-delvid="${v.id}" title="Eliminar video">×</button>
+  // AGRUPAR por carpeta de producto (colapsable), ordenado por fecha (reciente primero)
+  const byDate = arr => arr.slice().sort((a,b)=> a.id<b.id?1:(a.id>b.id?-1:0));
+  const group = (label, vids, fid) => {
+    const open = openTrkFolders[fid]!==false;
+    const items = byDate(vids).map(videoCardHtml).join("") || '<div class="libempty" style="padding:14px 4px">Vacío</div>';
+    return `<div class="folder">
+      <div class="fhead" data-trkfold="${fid}">
+        <span class="fcaret">${open?'▾':'▸'}</span>
+        <span class="fname">${escHtml(label)}</span>
+        <span class="fcount">${vids.length}</span>
       </div>
-      <div class="vidcard-body">
-        <div class="trkwrap"><table class="trk">
-          <thead><tr><th>Día</th><th>Plat.</th><th>Gasto</th><th>Conv.</th><th>CPA</th><th>CPM</th><th>CPC</th><th>CTR</th><th>Hook</th><th>Veredicto</th><th></th></tr></thead>
-          <tbody>${dayRows}</tbody>
-        </table></div>
-        ${dayForm}
-      </div>
+      ${open?`<div class="fitems">${items}</div>`:''}
     </div>`;
-  }).join("") : `<div class="libempty" style="padding:24px">Aún no hay videos. Regístralos desde el Estudio (botón "Mandar al Tracker") o agrégalos aquí abajo.</div>`;
+  };
+  let groups="";
+  folders.forEach(f=>{ const vids=tracker.filter(v=>v.folder===f.id); if(vids.length) groups+=group(f.name, vids, f.id); });
+  const loose=tracker.filter(v=>!v.folder || !folders.find(f=>f.id===v.folder));
+  if(loose.length) groups+=group("Sin carpeta", loose, "__none");
+  if(!tracker.length) groups=`<div class="libempty" style="padding:24px">Aún no hay videos. Regístralos desde el Estudio (botón "Mandar al Tracker") o agrégalos aquí abajo.</div>`;
 
   $("#viewTracker").innerHTML = `
     <div class="label">Dashboard · mejores videos del editor</div>
@@ -913,7 +923,7 @@ function renderTracker(){
       <div class="label">Registrar un video nuevo</div>
       <div class="trkgrid">
         <div class="full"><div class="small-label">Nombre (como lo subió el editor al Drive)</div>
-          <input class="freein" id="nv_name" placeholder="ENZIMAS 13/06 - VID 1" /></div>
+          <input class="freein" id="nv_name" placeholder="PRODUCTO 13/07 - VID 1" /></div>
         <div class="full"><div class="small-label">Link del video en Drive (opcional)</div>
           <input class="freein" id="nv_drive" placeholder="https://drive.google.com/…" /></div>
         <div class="full"><div class="small-label">Carpeta / producto</div>
@@ -922,19 +932,37 @@ function renderTracker(){
       <button class="btn" id="nvSave" style="margin-top:14px">+ Agregar video</button>
     </div>
 
-    <div class="label">Videos en testeo</div>
-    ${cards}`;
+    <div class="label">Videos por producto</div>
+    ${groups}`;
 
   // bind add-video
   $("#nvSave").addEventListener("click", ()=>{
     const name=$("#nv_name").value.trim(); if(!name){ alert("Ponle el nombre del video."); return; }
-    tracker.unshift({ id:"t"+Date.now(), video:name, drive:$("#nv_drive").value.trim(), folder:$("#nv_folder").value, days:[] });
+    const fid=$("#nv_folder").value;
+    tracker.unshift({ id:"t"+Date.now(), video:name, drive:$("#nv_drive").value.trim(), folder:fid, days:[] });
+    if(fid) openTrkFolders[fid]=true;
     saveLib(); renderTracker();
   });
-  // bind day form
+  // colapso de carpetas
+  $("#viewTracker").querySelectorAll("[data-trkfold]").forEach(h=>h.addEventListener("click",()=>{
+    const id=h.dataset.trkfold; openTrkFolders[id]=openTrkFolders[id]===false?true:false; renderTracker();
+  }));
+  // Pre-subir (editar datos) / TESTEAR (panel de días)
+  $("#viewTracker").querySelectorAll("[data-presub]").forEach(b=>b.addEventListener("click",()=>{
+    editingVid = editingVid===b.dataset.presub?null:b.dataset.presub; testingVid=null; renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-testear]").forEach(b=>b.addEventListener("click",()=>{
+    testingVid = testingVid===b.dataset.testear?null:b.dataset.testear; editingVid=null; addingDayTo=null; editingDay=null; renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-savevid]").forEach(b=>b.addEventListener("click",()=>{
+    const v=tracker.find(x=>x.id===b.dataset.savevid); if(!v) return;
+    v.video=$("#ev_name").value.trim()||v.video; v.drive=$("#ev_drive").value.trim(); v.folder=$("#ev_folder").value;
+    editingVid=null; saveLib(); renderTracker();
+  }));
+  $("#viewTracker").querySelectorAll("[data-cancelvid]").forEach(b=>b.addEventListener("click",()=>{ editingVid=null; renderTracker(); }));
+  // day form
   if($("#daySave")) $("#daySave").addEventListener("click", e=>saveDay(e.target.dataset.vid));
   if($("#dayCancel")) $("#dayCancel").addEventListener("click", ()=>{ addingDayTo=null; editingDay=null; renderTracker(); });
-  // delegated actions
   $("#viewTracker").querySelectorAll("[data-addday]").forEach(b=>b.addEventListener("click",()=>{ editingDay=null; addingDayTo=b.dataset.addday; renderTracker(); }));
   $("#viewTracker").querySelectorAll("[data-editday]").forEach(b=>b.addEventListener("click",()=>{ addingDayTo=null; editingDay={vid:b.dataset.vid, dayId:b.dataset.editday}; renderTracker(); }));
   $("#viewTracker").querySelectorAll("[data-delday]").forEach(b=>b.addEventListener("click",()=>{
@@ -944,6 +972,81 @@ function renderTracker(){
     if(!confirm("¿Eliminar este video y todo su historial?")) return;
     tracker=tracker.filter(x=>x.id!==b.dataset.delvid); saveLib(); renderTracker();
   }));
+}
+
+function videoCardHtml(v){
+  const st=videoStatus(v);
+  const testing = testingVid===v.id;
+  const editing = editingVid===v.id;
+  const folderOpts = `<option value="">Sin carpeta</option>`+folders.map(f=>`<option value="${escAttr(f.id)}" ${v.folder===f.id?'selected':''}>${escHtml(f.name)}</option>`).join("");
+
+  // panel pre-subir (datos básicos)
+  const editPanel = editing ? `<div class="dayform">
+      <div class="small-label">Nombre del video</div>
+      <input class="freein" id="ev_name" value="${escAttr(v.video)}" />
+      <div class="small-label" style="margin-top:8px">Link de la carpeta en Drive</div>
+      <input class="freein" id="ev_drive" value="${escAttr(v.drive||'')}" placeholder="https://drive.google.com/…" />
+      <div class="small-label" style="margin-top:8px">Carpeta / producto</div>
+      <select class="freein" id="ev_folder">${folderOpts}</select>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn" data-savevid="${v.id}" style="margin-top:0">Guardar datos</button>
+        <button class="clear" data-cancelvid="1" style="padding:0 16px">Cancelar</button>
+      </div></div>` : '';
+
+  // panel testeo (días)
+  let testPanel='';
+  if(testing){
+    const dayRows = (v.days&&v.days.length) ? v.days.map(d=>{
+      const dv=dayVerdict(d);
+      return `<tr>
+        <td>${escHtml(d.date||"—")}</td><td>${escHtml(d.platform||"—")}</td>
+        <td>${d.spend?("S/"+escHtml(d.spend)):"—"}</td><td>${escHtml(d.conv||"—")}</td>
+        <td>${d.cpa?("S/"+escHtml(d.cpa)):"—"}</td><td>${d.cpm?("S/"+escHtml(d.cpm)):"—"}</td>
+        <td>${d.cpc?("S/"+escHtml(d.cpc)):"—"}</td><td>${d.ctr?(escHtml(d.ctr)+"%"):"—"}</td>
+        <td>${d.hook?(escHtml(d.hook)+"%"):"—"}</td>
+        <td><span class="vbadge ${dv.cls}">${dv.txt}</span></td>
+        <td style="text-align:right;white-space:nowrap">
+          <button class="trkact" data-editday="${d.id}" data-vid="${v.id}">✎</button>
+          <button class="trkact d" data-delday="${d.id}" data-vid="${v.id}">×</button></td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="11" style="text-align:center;color:var(--faint);padding:14px">Sin días aún. Agrega el primer día de testeo abajo.</td></tr>`;
+
+    const showForm = (addingDayTo===v.id) || (editingDay&&editingDay.vid===v.id);
+    const ed = editingDay&&editingDay.vid===v.id ? (v.days.find(d=>d.id===editingDay.dayId)||{}) : {};
+    const dayForm = showForm ? `<div class="dayform">
+      <div class="trkgrid">${DAY_FIELDS.map(f=>{
+        const val=ed[f.k]||"";
+        const inp = f.type==="select"
+          ? `<select class="freein" id="day_${f.k}">${f.opts.map(o=>`<option ${val===o?'selected':''}>${o}</option>`).join("")}</select>`
+          : `<input class="freein" id="day_${f.k}" type="${f.type}" value="${escAttr(val)}" ${f.type==='number'?'inputmode="decimal"':''} />`;
+        return `<div><div class="small-label">${escHtml(f.label)}</div>${inp}</div>`;
+      }).join("")}</div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn" id="daySave" data-vid="${v.id}" style="margin-top:0">${editingDay&&editingDay.vid===v.id?'Guardar día':'+ Guardar día'}</button>
+        <button class="clear" id="dayCancel" style="padding:0 16px">Cancelar</button>
+      </div></div>` : `<button class="miniaddbtn" data-addday="${v.id}">+ Agregar día de testeo</button>`;
+
+    testPanel = `<div class="trkwrap"><table class="trk">
+        <thead><tr><th>Día</th><th>Plat.</th><th>Gasto</th><th>Conv.</th><th>CPA</th><th>CPM</th><th>CPC</th><th>CTR</th><th>Hook</th><th>Veredicto</th><th></th></tr></thead>
+        <tbody>${dayRows}</tbody>
+      </table></div>${dayForm}`;
+  }
+
+  return `<div class="vidcard">
+    <div class="vidcard-head">
+      <div class="vn">${v.drive?`<a href="${escAttr(v.drive)}" target="_blank" rel="noopener" title="Abrir en Drive">${escHtml(v.video)} ↗</a>`:escHtml(v.video)}</div>
+      <span class="vbadge ${st.cls}">${st.txt}</span>
+      <button class="trkact d" data-delvid="${v.id}" title="Eliminar video">×</button>
+    </div>
+    <div class="vidcard-body">
+      <div class="vidbtns">
+        <button class="vbtn ${editing?'on':''}" data-presub="${v.id}">Pre-subir</button>
+        <button class="vbtn test ${testing?'on':''}" data-testear="${v.id}">TESTEAR</button>
+      </div>
+      ${editPanel}
+      ${testPanel}
+    </div>
+  </div>`;
 }
 
 function saveDay(vid){
@@ -958,8 +1061,9 @@ function saveDay(vid){
 }
 
 // permite registrar un video desde el Estudio
-function sendToTracker(name, folder){
-  tracker.unshift({ id:"t"+Date.now(), video:name, drive:"", folder:folder||"", days:[] });
+function sendToTracker(name, folder, drive){
+  tracker.unshift({ id:"t"+Date.now(), video:name, drive:drive||"", folder:folder||"", days:[] });
+  if(folder) openTrkFolders[folder]=true;
   saveLib();
 }
 
